@@ -3,7 +3,6 @@
     Tendon-driven leg model
     -->
 
-
     <option timestep="0.005" iterations="50" solver="Newton" tolerance="1e-10"/>
 
     <size njmax="50" nconmax="10" nstack="200"/>
@@ -14,7 +13,7 @@
 
     <default>
         <joint type="hinge" pos="0 0 0" axis="0 1 0" limited="true" damping="1" frictionloss="3" />
-        <tendon stiffness = "0"/>
+        <tendon stiffness = "000" damping='000'/>
         <muscle ctrllimited="true" ctrlrange="0 1" force="6000" />
     </default>
 
