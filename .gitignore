@@ -1,3 +1,7 @@
+# skip the logs folder
+logs/
+logs_archive/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

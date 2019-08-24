@@ -13,7 +13,7 @@ simplefilter(action='ignore', category=FutureWarning)
 
 stiffness_versions = 7 #[0, 500, 1000, 2000, 4000, 7000, 10000]
 mc_run_number = 100
-babbling_times = np.arange(1,1+5)
+babbling_times = [2]#np.arange(1,1+5)
 errors_all = np.zeros([2, mc_run_number, len(babbling_times), stiffness_versions])
 for stiffness_ver in range(stiffness_versions):
 	MuJoCo_model_name="nmi_leg_w_chassis_air_v{}.xml".format(stiffness_ver)

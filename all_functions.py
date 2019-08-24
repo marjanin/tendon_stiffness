@@ -199,7 +199,7 @@ def inverse_mapping_fcn(kinematics, activations, log_address, early_stopping=Fal
 	model.fit(
 		x_train,
 		y_train,
-		epochs=50,
+		epochs=20,
 		validation_data=(x_valid, y_valid),
 		callbacks=[tensorboard_callback])
 	# running the model
@@ -321,7 +321,7 @@ def kinematics_activations_show_fcn(vs_time=False, timestep=0.005, **kwargs):
 		plt.ylabel('motor 1 activation values')
 		plt.xlabel('Sample #')
 	plt.show(block=True)
-def create_sin_cos_kinematics_fcn(attempt_length = 10 , number_of_cycles = 10, timestep = 0.005):
+def create_sin_cos_kinematics_fcn(attempt_length = 5 , number_of_cycles = 4, timestep = 0.005):
 	"""
 	this function creates desired task kinematics and their corresponding 
 	actuation values predicted using the inverse mapping
@@ -409,7 +409,7 @@ def run_activations_fcn(MuJoCo_model_name, est_activations, timestep=0.005, Mj_r
 		real_attempt_positions[:,0], real_attempt_positions[:,1], timestep = 0.005)
 	return real_attempt_kinematics, real_attempt_activations, chassis_pos
 
-def error_cal_fcn(input1, input2, disregard_error_percentage = 30):
+def error_cal_fcn(input1, input2, disregard_error_percentage = 25):
 	error = np.sqrt(np.mean(np.square(input1[int(np.round(disregard_error_percentage/100*len(input1))):]-input2[int(np.round(disregard_error_percentage/100*len(input2))):])))
 	#import pdb; pdb.set_trace()
 	return error
