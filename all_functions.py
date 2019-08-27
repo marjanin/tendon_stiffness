@@ -18,7 +18,7 @@ def in_air_adaptation_fcn(MuJoCo_model_name, model, babbling_kinematics, babblin
 	Mj_render_last_run = False
 	cum_kinematics = babbling_kinematics
 	cum_activations = babbling_activations
-	attempt_kinematics = create_sin_cos_kinematics_fcn(attempt_length=100, number_of_cycles=70)
+	attempt_kinematics = create_sin_cos_kinematics_fcn(attempt_length=30, number_of_cycles=21)
 	#kinematics_activations_show_fcn(vs_time=False, kinematics=attempt_kinematics)
 	est_attempt_activations = estimate_activations_fcn(model=model, desired_kinematics=attempt_kinematics)
 	if (number_of_refinements == 0) and (Mj_render==True):
@@ -184,9 +184,18 @@ def inverse_mapping_fcn(kinematics, activations, log_address=None, early_stoppin
 	x = kinematics
 	y = activations
 	x_train, x_valid, y_train, y_valid = sklearn.model_selection.train_test_split(x, y, test_size=0.2)
-
+	
+	logdir = log_address
+	tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
+	
 	if ("prior_model" in kwargs):
 		model=kwargs["prior_model"]
+		model.fit(
+		x_train,
+		y_train,
+		epochs=5,
+		validation_data=(x_valid, y_valid),
+		callbacks=[tensorboard_callback])
 	else:
 		model = tf.keras.Sequential()
 		# Adds a densely-connected layer with 15 units to the model:
@@ -197,17 +206,16 @@ def inverse_mapping_fcn(kinematics, activations, log_address=None, early_stoppin
 	              loss='mse',       # mean squared error
 	              metrics=['mse'])  # mean squared error
 		#training the model
-
-	logdir = log_address
-	tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
-	model.fit(
+		model.fit(
 		x_train,
 		y_train,
 		epochs=20,
 		validation_data=(x_valid, y_valid),
 		callbacks=[tensorboard_callback])
+
+	
 	# running the model
-	est_activations=model.predict(kinematics)
+	#est_activations=model.predict(kinematics)
 	return model
 
 def inverse_mapping_fcn_sklearn(kinematics, activations, early_stopping=False, **kwargs):

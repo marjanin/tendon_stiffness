@@ -9,18 +9,18 @@ from warnings import simplefilter
 
 simplefilter(action='ignore', category=FutureWarning)
 
-experiment_ID = "transfer_learning_2"
+experiment_ID = "transfer_learning_6"
 mc_run_number = 50
-babbling_time = 5
-number_of_refinements = 1
+babbling_time = 3
+number_of_refinements = 5
 errors_all_A_A = np.zeros([2, number_of_refinements+1, mc_run_number])
 errors_all_A_B = np.zeros([2, number_of_refinements+1, mc_run_number])
 errors_all_B_B = np.zeros([2, number_of_refinements+1, mc_run_number])
 
-stiffness_version = 0
-MuJoCo_model_name_A="nmi_leg_w_chassis_air_v{}.xml".format(stiffness_version)
-stiffness_version = 4
-MuJoCo_model_name_B="nmi_leg_w_chassis_air_v{}.xml".format(stiffness_version)
+stiffness_version_A = 5
+MuJoCo_model_name_A="nmi_leg_w_chassis_air_v{}.xml".format(stiffness_version_A)
+stiffness_version_B = 2
+MuJoCo_model_name_B="nmi_leg_w_chassis_air_v{}.xml".format(stiffness_version_B)
 
 random_seed = -1
 
@@ -37,7 +37,7 @@ for mc_counter in range(mc_run_number):
 	model_A_babble = inverse_mapping_fcn(
 		kinematics=babbling_kinematics,
 		activations=babbling_activations,
-		log_address="./logs/{}/scalars/babble_A_mc_run{}".format(experiment_ID, mc_counter),
+		log_address="./logs/{}/scalars/babble_A_mc_run{}/".format(experiment_ID, mc_counter),
 		early_stopping=False)
 	cum_kinematics_A_babble = babbling_kinematics
 	cum_activations_A_babble = babbling_activations
@@ -51,7 +51,7 @@ for mc_counter in range(mc_run_number):
 			babbling_kinematics=cum_kinematics_A_babble,
 			babbling_activations=cum_activations_A_babble,
 			number_of_refinements=number_of_refinements,
-			log_address="./logs/{}/scalars/refine_A_A_mc_run{}".format(experiment_ID, mc_counter),
+			log_address="./logs/{}/scalars/refine_A_A_mc_run{}/".format(experiment_ID, mc_counter),
 			error_plots_show=False,
 			Mj_render=False)
 	#import pdb; pdb.set_trace()
@@ -66,7 +66,7 @@ for mc_counter in range(mc_run_number):
 			babbling_kinematics=cum_kinematics_A_babble,
 			babbling_activations=cum_activations_A_babble,
 			number_of_refinements=number_of_refinements,
-			log_address="./logs/{}/scalars/refine_A_B_mc_run{}".format(experiment_ID, mc_counter),
+			log_address="./logs/{}/scalars/refine_A_B_mc_run{}/".format(experiment_ID, mc_counter),
 			error_plots_show=False,
 			Mj_render=False)
 	errors_all_A_B[:,:, mc_counter] = [errors[0],errors[1]]
@@ -82,7 +82,7 @@ for mc_counter in range(mc_run_number):
 	model_B_babble = inverse_mapping_fcn(
 		kinematics=babbling_kinematics,
 		activations=babbling_activations,
-		log_address="./logs/{}/scalars/babble_B_mc_run{}".format(experiment_ID, mc_counter),
+		log_address="./logs/{}/scalars/babble_B_mc_run{}/".format(experiment_ID, mc_counter),
 		early_stopping=False)
 	cum_kinematics_B_babble = babbling_kinematics
 	cum_activations_B_babble = babbling_activations
@@ -96,7 +96,7 @@ for mc_counter in range(mc_run_number):
 			babbling_kinematics=cum_kinematics_B_babble,
 			babbling_activations=cum_activations_B_babble,
 			number_of_refinements=number_of_refinements,
-			log_address="./logs/{}/scalars/refine_B_B_mc_run{}".format(experiment_ID, mc_counter),
+			log_address="./logs/{}/scalars/refine_B_B_mc_run{}/".format(experiment_ID, mc_counter),
 			error_plots_show=False,
 			Mj_render=False)
 	errors_all_B_B[:,:, mc_counter] = [errors[0],errors[1]]
