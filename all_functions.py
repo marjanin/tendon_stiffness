@@ -14,11 +14,11 @@ from mujoco_py.generated import const
 ################################################
 #Functions for main tests
 
-def in_air_adaptation_fcn(MuJoCo_model_name, model, babbling_kinematics, babbling_activations, number_of_refinements=10, error_plots_show=False, Mj_render=False):
+def in_air_adaptation_fcn(MuJoCo_model_name, model, babbling_kinematics, babbling_activations, number_of_refinements=10, log_address=None, error_plots_show=False, Mj_render=False):
 	Mj_render_last_run = False
 	cum_kinematics = babbling_kinematics
 	cum_activations = babbling_activations
-	attempt_kinematics = create_sin_cos_kinematics_fcn(attempt_length=10, number_of_cycles=7)
+	attempt_kinematics = create_sin_cos_kinematics_fcn(attempt_length=100, number_of_cycles=70)
 	#kinematics_activations_show_fcn(vs_time=False, kinematics=attempt_kinematics)
 	est_attempt_activations = estimate_activations_fcn(model=model, desired_kinematics=attempt_kinematics)
 	if (number_of_refinements == 0) and (Mj_render==True):
@@ -32,7 +32,7 @@ def in_air_adaptation_fcn(MuJoCo_model_name, model, babbling_kinematics, babblin
 			Mj_render_last_run = True
 		print("Refinement_no", ii+1)
 		[cum_kinematics, cum_activations] = concatinate_data_fcn(cum_kinematics, cum_activations, real_attempt_kinematics, real_attempt_activations)
-		model = inverse_mapping_fcn(kinematics=cum_kinematics, activations=cum_activations, prior_model=model)
+		model = inverse_mapping_fcn(kinematics=cum_kinematics, activations=cum_activations, log_address=log_address+"refinement_{}".format(ii+1), prior_model=model)
 		est_attempt_activations = estimate_activations_fcn(model=model, desired_kinematics=attempt_kinematics)
 		[real_attempt_kinematics, real_attempt_activations, chassis_pos] = run_activations_fcn(MuJoCo_model_name=MuJoCo_model_name, est_activations=est_attempt_activations, Mj_render=Mj_render_last_run)
 		error0 = np.append(error0, error_cal_fcn(attempt_kinematics[:,0], real_attempt_kinematics[:,0]))
@@ -176,7 +176,7 @@ def systemID_input_gen_fcn(signal_duration_in_seconds, pass_chance, max_in, min_
 			gen_input[ii] = gen_input[ii-1]
 	return gen_input
 
-def inverse_mapping_fcn(kinematics, activations, log_address, early_stopping=False, **kwargs):
+def inverse_mapping_fcn(kinematics, activations, log_address=None, early_stopping=False, **kwargs):
 	"""
 	this function used the babbling data to create an inverse mapping using a
 	MLP NN
@@ -185,15 +185,19 @@ def inverse_mapping_fcn(kinematics, activations, log_address, early_stopping=Fal
 	y = activations
 	x_train, x_valid, y_train, y_valid = sklearn.model_selection.train_test_split(x, y, test_size=0.2)
 
-	model = tf.keras.Sequential()
-	# Adds a densely-connected layer with 15 units to the model:
-	model.add(tf.keras.layers.Dense(15, activation='relu'))
-	# Add a softmax layer with 10 output units:
-	model.add(tf.keras.layers.Dense(3, activation='sigmoid'))
-	model.compile(optimizer=tf.train.AdamOptimizer(0.01),
-              loss='mse',       # mean squared error
-              metrics=['mse'])  # mean squared error
-	#training the model
+	if ("prior_model" in kwargs):
+		model=kwargs["prior_model"]
+	else:
+		model = tf.keras.Sequential()
+		# Adds a densely-connected layer with 15 units to the model:
+		model.add(tf.keras.layers.Dense(15, activation='relu'))
+		# Add a softmax layer with 10 output units:
+		model.add(tf.keras.layers.Dense(3, activation='sigmoid'))
+		model.compile(optimizer=tf.train.AdamOptimizer(0.01),
+	              loss='mse',       # mean squared error
+	              metrics=['mse'])  # mean squared error
+		#training the model
+
 	logdir = log_address
 	tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 	model.fit(

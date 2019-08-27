@@ -9,8 +9,9 @@ import pickle
 from warnings import simplefilter
 simplefilter(action='ignore', category=FutureWarning)
 
-test_number = 1
+test_number = 3
 file_address = "./results/errors_all_test{}.npy".format(test_number)
+
 errors_all = np.load(file_address)
 errors_all_mean=errors_all.mean(1)
 errors_all_std = errors_all.std(1)
