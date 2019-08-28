@@ -10,7 +10,7 @@ from warnings import simplefilter
 
 simplefilter(action='ignore', category=FutureWarning)
 
-experiment_ID="error_vs_stiffness_test5_cyclical_p2p"
+experiment_ID="error_vs_stiffness_test5_cyclical_p2p__"
 stiffness_versions = 9 #[0, 500, 1000, 2000, 4000, 7000, 10000. 15000, 20000]
 mc_run_number = 50
 babbling_times = [3]#np.arange(1,1+5)

@@ -328,7 +328,7 @@ def inverse_mapping_fcn(kinematics, activations, log_address=None, early_stoppin
 		model = tf.keras.Sequential()
 		# Adds a densely-connected layer with 15 units to the model:
 		model.add(tf.keras.layers.Dense(15, activation='relu'))
-		# Add a softmax layer with 10 output units:
+		# Add a softmax layer with 3 output units:
 		model.add(tf.keras.layers.Dense(3, activation='sigmoid'))
 		model.compile(optimizer=tf.train.AdamOptimizer(0.01),
 	              loss='mse',       # mean squared error
@@ -340,7 +340,7 @@ def inverse_mapping_fcn(kinematics, activations, log_address=None, early_stoppin
 		epochs=20,
 		validation_data=(x_valid, y_valid),
 		callbacks=[tensorboard_callback])
-
+		#tf.keras.utils.plot_model(model, to_file='model.png')
 	
 	# running the model
 	#est_activations=model.predict(kinematics)
