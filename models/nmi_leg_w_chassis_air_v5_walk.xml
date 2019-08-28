@@ -13,7 +13,7 @@
 
     <default>
         <joint type="hinge" pos="0 0 0" axis="0 1 0" limited="true" damping="1" frictionloss="30" />
-        <tendon stiffness = "1000" damping='100'/>
+        <tendon stiffness = "7000" damping='100'/>
         <muscle ctrllimited="true" ctrlrange="0 1" force="6000" />
     </default>
 
@@ -29,10 +29,10 @@
         <geom name="floor" pos="0 0 -0.5" size="0 0 1" type="plane" material="matplane"/>
 
         <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 1 -5"/>
-        <body name="Chassis" pos="0 0 .10">
+        <body name="Chassis" pos="0 0 -.05">
             <camera name="Chassis_camera" pos="0 -6 3"  zaxis="0 -2 1"/>
             <geom name="Chassis_frame" type="box" pos="0 0 1.7" zaxis="0 1 0" size=".50 .30 .25" rgba=".25 .25 .25 0.25" mass=".1"/>
-            <!--<joint armature="0" axis="1 0 0" damping="0" frictionloss="3" limited="false" name="rootx" pos="0 0 0" stiffness="0" type="slide"/>-->
+            <joint armature="0" axis="1 0 0" damping="0" frictionloss="30" limited="false" name="rootx" pos="0 0 0" stiffness="0" type="slide"/>
             <!--<joint armature="0" axis="0 0 1" damping="0" frictionloss="3" limited="false" name="rootz" pos="0 0 0" stiffness="0" springdamper=".01 10" type="slide"/>--> <!-- to enable z axis slide with a spring damper-->
 
             <site name="S_M0" pos="0.40 0 1.8" size="0.02"/>

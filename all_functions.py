@@ -13,6 +13,52 @@ from copy import deepcopy
 from mujoco_py.generated import const
 ################################################
 #Functions for main tests
+def learn_to_move_fcn(MuJoCo_model_name, model, cum_kinematics, cum_activations, reward_thresh=6, refinement = False, Mj_render = False):
+	
+	prev_reward = np.array([0])
+	best_reward_so_far = prev_reward
+	best_model= model
+	all_rewards = []
+	exploitation_run_no = 0
+	new_features = gen_features_fcn(prev_reward=prev_reward, reward_thresh=reward_thresh, best_reward_so_far=best_reward_so_far, feat_vec_length=10)
+	best_features_so_far = new_features
+	while exploitation_run_no<=15:
+		if best_reward_so_far>reward_thresh:
+			exploitation_run_no+=1
+		new_features = gen_features_fcn(reward_thresh=reward_thresh, best_reward_so_far=best_reward_so_far, best_features_so_far=best_features_so_far)# .9*np.ones([9,])#
+		[prev_reward, attempt_kinematics, est_attempt_activations, real_attempt_kinematics, real_attempt_activations] = \
+			feat_to_run_attempt_fcn(MuJoCo_model_name=MuJoCo_model_name, features=new_features, model=model,feat_show=False)
+		
+		#kinematics_activations_show_fcn(vs_time=True, kinematics=attempt_kinematics,activations=est_attempt_activations)
+		#kinematics_activations_show_fcn(vs_time=True, kinematics=real_attempt_kinematics,activations=real_attempt_activations)
+		[cum_kinematics, cum_activations] = \
+		concatinate_data_fcn(
+			cum_kinematics, cum_activations, real_attempt_kinematics, real_attempt_activations, throw_percentage = 0.20)
+		all_rewards = np.append(all_rewards, prev_reward)
+		if prev_reward>best_reward_so_far:
+			best_reward_so_far = prev_reward
+			best_features_so_far = new_features
+			best_model = tf.keras.models.clone_model(model)
+		if refinement:
+			model = inverse_mapping_fcn(cum_kinematics, cum_activations, prior_model=model)
+		print("best reward so far: ", best_reward_so_far)
+	input("Learning to walk completed, Press any key to proceed")
+	[prev_reward_best, attempt_kinematics_best, est_attempt_activations_best, real_attempt_kinematics_best, real_attempt_activations_best]= \
+	feat_to_run_attempt_fcn(MuJoCo_model_name=MuJoCo_model_name, features=best_features_so_far, model=best_model, feat_show=True, Mj_render=Mj_render)
+	kinematics_activations_show_fcn(vs_time=True, kinematics=real_attempt_kinematics)
+	print("all_reward: ", all_rewards)
+	print("prev_reward_best: ", prev_reward_best)
+	#import pdb; pdb.set_trace()
+	return best_reward_so_far, all_rewards, best_features_so_far, real_attempt_activations
+
+def feat_to_run_attempt_fcn(MuJoCo_model_name, features, model,feat_show=False,Mj_render=False):
+	[q0_filtered, q1_filtered] = feat_to_positions_fcn(features, show=feat_show)
+	step_kinematics = positions_to_kinematics_fcn(q0_filtered, q1_filtered, timestep = 0.005)
+	attempt_kinematics = step_to_attempt_kinematics_fcn(step_kinematics=step_kinematics)
+	est_attempt_activations = estimate_activations_fcn(model=model, desired_kinematics=attempt_kinematics)
+	[real_attempt_kinematics, real_attempt_activations, chassis_pos]=run_activations_fcn(MuJoCo_model_name=MuJoCo_model_name, est_activations=est_attempt_activations, Mj_render=Mj_render)
+	prev_reward = chassis_pos[-1]
+	return prev_reward, attempt_kinematics, est_attempt_activations, real_attempt_kinematics, real_attempt_activations
 
 def in_air_adaptation_fcn(MuJoCo_model_name, model, babbling_kinematics, babbling_activations, number_of_refinements=10, log_address=None, error_plots_show=False, Mj_render=False):
 	Mj_render_last_run = False
@@ -64,7 +110,77 @@ def in_air_adaptation_fcn(MuJoCo_model_name, model, babbling_kinematics, babblin
 	errors=np.concatenate([[error0], [error1]],axis=0)
 	return model, errors, cum_kinematics, cum_activations
 ################################################
+################################################
 #Higher level control functions
+def gen_features_fcn(reward_thresh, best_reward_so_far, **kwargs):
+	#import pdb; pdb.set_trace()
+	feat_min = 0.4
+	feat_max = 0.9
+	if ("best_features_so_far" in kwargs):
+		best_features_so_far = kwargs["best_features_so_far"]
+	elif ("feat_vec_length" in kwargs):
+		best_features_so_far = np.random.uniform(feat_min,feat_max,kwargs["feat_vec_length"])
+	else:
+		raise NameError('Either best_features_so_far or feat_vec_length needs to be provided')
+	
+	if best_reward_so_far<reward_thresh:
+		new_features = np.random.uniform(feat_min, feat_max, best_features_so_far.shape[0])	
+	else:
+		sigma= np.max([(12-best_reward_so_far)/100, 0.01])# should be inversly proportional to reward
+		new_features = np.zeros(best_features_so_far.shape[0],)
+		for ii in range(best_features_so_far.shape[0]):
+			new_features[ii] = np.random.normal(best_features_so_far[ii],sigma)
+		new_features = np.maximum(new_features, feat_min*np.ones(best_features_so_far.shape[0],))
+		new_features = np.minimum(new_features, feat_max*np.ones(best_features_so_far.shape[0],))
+	return new_features
+
+def feat_to_positions_fcn(features, timestep=0.005, cycle_duration_in_seconds = 1.3, show=False):
+	number_of_features = features.shape[0]
+	each_feature_length =  int(np.round((cycle_duration_in_seconds/number_of_features)/timestep))
+	feat_angles = np.linspace(0, 2*np.pi*(number_of_features/(number_of_features+1)), number_of_features)
+	q0_raw = features*np.sin(feat_angles)
+	q1_raw = features*np.cos(feat_angles)
+	q0_scaled = (q0_raw*np.pi/3)
+	q1_scaled = -1*((-1*q1_raw+1)/2)*(np.pi/2) # since the mujoco model goes from 0 to -pi/2
+	q0_scaled_extended = np.append(q0_scaled, q0_scaled[0])
+	q1_scaled_extended = np.append(q1_scaled, q1_scaled[0])
+
+	q0_scaled_extended_long = np.array([])
+	q1_scaled_extended_long = np.array([])
+	for ii in range(features.shape[0]):
+		q0_scaled_extended_long = np.append(
+			q0_scaled_extended_long, np.linspace(
+				q0_scaled_extended[ii], q0_scaled_extended[ii+1], each_feature_length))
+		q1_scaled_extended_long = np.append(
+			q1_scaled_extended_long, np.linspace(
+				q1_scaled_extended[ii], q1_scaled_extended[ii+1], each_feature_length))
+	q0_scaled_extended_long_3 = np.concatenate(
+		[q0_scaled_extended_long[:-1], q0_scaled_extended_long[:-1], q0_scaled_extended_long])
+	q1_scaled_extended_long_3 = np.concatenate(
+		[q1_scaled_extended_long[:-1], q1_scaled_extended_long[:-1], q1_scaled_extended_long])
+
+	fir_filter_length = int(np.round(each_feature_length/(1)))
+	b=np.ones(fir_filter_length,)/fir_filter_length # a simple moving average filter > users can 
+	#change these if they need smoother pattern
+	a=1
+	q0_filtered_3 = signal.filtfilt(b, a, q0_scaled_extended_long_3)
+	q1_filtered_3 = signal.filtfilt(b, a, q1_scaled_extended_long_3)
+
+	q0_filtered = q0_filtered_3[q0_scaled_extended_long.shape[0]:2*q0_scaled_extended_long.shape[0]-1] # length = 1999 (the 
+	#very last was ommited since it is going to be the first one on the next cycle)
+	q1_filtered = q1_filtered_3[q1_scaled_extended_long.shape[0]:2*q1_scaled_extended_long.shape[0]-1]
+	if show:
+		plt.figure()
+		plt.scatter(q0_scaled, q1_scaled)
+		plt.plot(q0_filtered, q1_filtered)
+		plt.xlabel("q0")
+		plt.ylabel("q1")
+		plt.show(block=True)
+	return q0_filtered, q1_filtered
+def step_to_attempt_kinematics_fcn(step_kinematics, number_of_steps_in_an_attempt = 10):
+	attempt_kinematics=np.matlib.repmat(step_kinematics,number_of_steps_in_an_attempt,1)
+	return(attempt_kinematics)
+
 def concatinate_data_fcn( cum_kinematics, cum_activations, kinematics, activations, throw_percentage = 0.20):
 	size_of_incoming_data = kinematics.shape[0]
 	samples_to_throw = int(np.round(throw_percentage*size_of_incoming_data))

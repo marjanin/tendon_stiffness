@@ -9,7 +9,7 @@ import pickle
 from warnings import simplefilter
 simplefilter(action='ignore', category=FutureWarning)
 
-experiment_ID = "transfer_learning_5"
+experiment_ID = "transfer_learning_6"
 errors_all_A_A = np.load("./results/{}/errors_all_A_A.npy".format(experiment_ID))
 errors_all_A_B = np.load("./results/{}/errors_all_A_B.npy".format(experiment_ID))
 errors_all_B_B = np.load("./results/{}/errors_all_B_B.npy".format(experiment_ID))
