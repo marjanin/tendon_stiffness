@@ -53,7 +53,7 @@ def learn_to_move_fcn(MuJoCo_model_name, model, cum_kinematics, cum_activations,
 
 def feat_to_run_attempt_fcn(MuJoCo_model_name, features, model,feat_show=False,Mj_render=False):
 	[q0_filtered, q1_filtered] = feat_to_positions_fcn(features, show=feat_show)
-	step_kinematics = positions_to_kinematics_fcn(q0_filtered, q1_filtered, timestep = 0.005)
+	step_kinematics = positions_to_kinematics_fcn(q0_filtered, q1_filtered, timestep = 0.01)
 	attempt_kinematics = step_to_attempt_kinematics_fcn(step_kinematics=step_kinematics)
 	est_attempt_activations = estimate_activations_fcn(model=model, desired_kinematics=attempt_kinematics)
 	[real_attempt_kinematics, real_attempt_activations, chassis_pos]=run_activations_fcn(MuJoCo_model_name=MuJoCo_model_name, est_activations=est_attempt_activations, Mj_render=Mj_render)
@@ -109,9 +109,21 @@ def in_air_adaptation_fcn(MuJoCo_model_name, model, babbling_kinematics, babblin
 		plt.show()
 	errors=np.concatenate([[error0], [error1]],axis=0)
 	return model, errors, cum_kinematics, cum_activations
+## point-to-point experiment
+def p2p_run(model, MuJoCo_model_name):
+	q0_p2p = p2p_positions_gen_fcn(low=-np.pi/3, high=np.pi/3, number_of_positions=10, duration_of_each_position=3, timestep=0.01)
+	q1_p2p = p2p_positions_gen_fcn(low=-np.pi/2, high=0, number_of_positions=10, duration_of_each_position=3, timestep=0.01)
+	desired_kinematics_p2p = positions_to_kinematics_fcn(q0_p2p, q1_p2p, timestep = 0.01)
+	est_activations_p2p = estimate_activations_fcn(model, desired_kinematics_p2p)
+	[real_attempt_kinematics_p2p, _, _] = run_activations_fcn(MuJoCo_model_name, est_activations_p2p, timestep=0.01, Mj_render=False)
+	error0_p2p = error_cal_fcn(desired_kinematics_p2p[:,0], real_attempt_kinematics_p2p[:,0])
+	error1_p2p = error_cal_fcn(desired_kinematics_p2p[:,3], real_attempt_kinematics_p2p[:,3])
+	errors_p2p = np.concatenate([[error0_p2p], [error1_p2p]],axis=0)
+	return errors_p2p		
 ################################################
 ################################################
 #Higher level control functions
+
 def gen_features_fcn(reward_thresh, best_reward_so_far, **kwargs):
 	#import pdb; pdb.set_trace()
 	feat_min = 0.4
@@ -134,7 +146,7 @@ def gen_features_fcn(reward_thresh, best_reward_so_far, **kwargs):
 		new_features = np.minimum(new_features, feat_max*np.ones(best_features_so_far.shape[0],))
 	return new_features
 
-def feat_to_positions_fcn(features, timestep=0.005, cycle_duration_in_seconds = 1.3, show=False):
+def feat_to_positions_fcn(features, timestep=0.01, cycle_duration_in_seconds = 1.3, show=False):
 	number_of_features = features.shape[0]
 	each_feature_length =  int(np.round((cycle_duration_in_seconds/number_of_features)/timestep))
 	feat_angles = np.linspace(0, 2*np.pi*(number_of_features/(number_of_features+1)), number_of_features)
@@ -206,7 +218,7 @@ def babbling_fcn(MuJoCo_model_name, simulation_minutes=5, kinematics_activations
 	control_vector_length=sim.data.ctrl.__len__()
 	# print("control_vector_length: "+str(control_vector_length))
 	simulation_time=simulation_minutes*60.0
-	timestep=0.005
+	timestep=0.01
 	# babble_phase_time=3
 
 	run_samples=int(np.round(simulation_time/timestep))
@@ -237,7 +249,7 @@ def babbling_fcn(MuJoCo_model_name, simulation_minutes=5, kinematics_activations
 		kinematics_activations_show_fcn(activations=babbling_activations)
 	[babbling_kinematics, babbling_activations, chassis_pos] = \
 	run_activations_fcn(
-		MuJoCo_model_name=MuJoCo_model_name, est_activations=babbling_activations, timestep=0.005, Mj_render=False
+		MuJoCo_model_name=MuJoCo_model_name, est_activations=babbling_activations, timestep=0.01, Mj_render=False
 		)
 
 	# for ii in range(run_samples):
@@ -274,7 +286,7 @@ def babbling_fcn(MuJoCo_model_name, simulation_minutes=5, kinematics_activations
 		np.max(babbling_kinematics[:,0]),
 		np.min(babbling_kinematics[:,3]),
 		np.max(babbling_kinematics[:,3]))
-	return babbling_kinematics[1000:,:], babbling_activations[1000:,:]
+	return babbling_kinematics[200:,:], babbling_activations[200:,:]
 	#np.save("babbling_kinematics",babbling_kinematics)
 	#np.save("babbling_activations",babbling_activations)
 
@@ -380,7 +392,16 @@ def inverse_mapping_fcn_sklearn(kinematics, activations, early_stopping=False, *
 	return model
 	#import pdb; pdb.set_trace()
 
-def positions_to_kinematics_fcn(q0, q1, timestep = 0.005):
+def p2p_positions_gen_fcn(low, high, number_of_positions, duration_of_each_position, timestep):
+	sample_no_of_each_position = duration_of_each_position / timestep
+	random_array = np.zeros(int(np.round(number_of_positions*sample_no_of_each_position)),)
+	for ii in range(number_of_positions):
+		random_value = ((high-low)*(np.random.rand(1)[0])) + low
+		random_array_1position = np.repeat(random_value,sample_no_of_each_position)
+		random_array[int(ii*sample_no_of_each_position):int((ii+1)*sample_no_of_each_position)] = random_array_1position
+	return random_array
+	
+def positions_to_kinematics_fcn(q0, q1, timestep = 0.01):
 	kinematics=np.transpose(
 	np.concatenate(
 		(
@@ -395,7 +416,7 @@ def positions_to_kinematics_fcn(q0, q1, timestep = 0.005):
 	)
 	return kinematics
 
-def kinematics_activations_show_fcn(vs_time=False, timestep=0.005, **kwargs):
+def kinematics_activations_show_fcn(vs_time=False, timestep=0.01, **kwargs):
 	#plotting the resulting kinematics or activations
 	sample_no_kinematics=0
 	sample_no_activations=0
@@ -449,7 +470,7 @@ def kinematics_activations_show_fcn(vs_time=False, timestep=0.005, **kwargs):
 		plt.ylabel('motor 1 activation values')
 		plt.xlabel('Sample #')
 	plt.show(block=True)
-def create_sin_cos_kinematics_fcn(attempt_length = 5 , number_of_cycles = 4, timestep = 0.005):
+def create_sin_cos_kinematics_fcn(attempt_length = 5 , number_of_cycles = 4, timestep = 0.01):
 	"""
 	this function creates desired task kinematics and their corresponding 
 	actuation values predicted using the inverse mapping
@@ -488,7 +509,7 @@ def estimate_activations_fcn(model, desired_kinematics):
 	# plt.show(block=False)
 	return est_activations
 
-def run_activations_fcn(MuJoCo_model_name, est_activations, timestep=0.005, Mj_render=False):
+def run_activations_fcn(MuJoCo_model_name, est_activations, timestep=0.01, Mj_render=False):
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! the q0 is now the chasis pos. needs to be fixed
 	"""
 	this function runs the predicted activations generatred from running
@@ -534,7 +555,7 @@ def run_activations_fcn(MuJoCo_model_name, est_activations, timestep=0.005, Mj_r
 	    if Mj_render:
 	    	viewer.render()
 	real_attempt_kinematics = positions_to_kinematics_fcn(
-		real_attempt_positions[:,0], real_attempt_positions[:,1], timestep = 0.005)
+		real_attempt_positions[:,0], real_attempt_positions[:,1], timestep = 0.01)
 	return real_attempt_kinematics, real_attempt_activations, chassis_pos
 
 def error_cal_fcn(input1, input2, disregard_error_percentage = 25):
