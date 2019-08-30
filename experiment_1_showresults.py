@@ -9,7 +9,7 @@ import pickle
 from warnings import simplefilter
 simplefilter(action='ignore', category=FutureWarning)
 
-experiment_ID="error_vs_stiffness_test5_cyclical_p2p"
+experiment_ID="experiment_1B"
 
 fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 5))
 N = 9
@@ -95,3 +95,5 @@ for bplot in (p1_0, p1_1, p1_2):
 print("p-value: ", p_val)
 ##
 plt.show()
+
+

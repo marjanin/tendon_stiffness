@@ -6,7 +6,7 @@ import sklearn
 from sklearn.neural_network import MLPRegressor
 import tensorflow as tf
 from matplotlib import pyplot as plt
-#import pickle
+import pickle
 import os
 from datetime import datetime
 from copy import deepcopy
@@ -110,16 +110,57 @@ def in_air_adaptation_fcn(MuJoCo_model_name, model, babbling_kinematics, babblin
 	errors=np.concatenate([[error0], [error1]],axis=0)
 	return model, errors, cum_kinematics, cum_activations
 ## point-to-point experiment
-def p2p_run(model, MuJoCo_model_name):
+def p2p_run_fcn(MuJoCo_model_name, model, babbling_kinematics, babbling_activations, number_of_refinements=10, log_address=None, error_plots_show=False, Mj_render=False):
+	Mj_render_last_run = False
+	cum_kinematics = babbling_kinematics
+	cum_activations = babbling_activations
 	q0_p2p = p2p_positions_gen_fcn(low=-np.pi/3, high=np.pi/3, number_of_positions=10, duration_of_each_position=3, timestep=0.01)
 	q1_p2p = p2p_positions_gen_fcn(low=-np.pi/2, high=0, number_of_positions=10, duration_of_each_position=3, timestep=0.01)
-	desired_kinematics_p2p = positions_to_kinematics_fcn(q0_p2p, q1_p2p, timestep = 0.01)
-	est_activations_p2p = estimate_activations_fcn(model, desired_kinematics_p2p)
-	[real_attempt_kinematics_p2p, _, _] = run_activations_fcn(MuJoCo_model_name, est_activations_p2p, timestep=0.01, Mj_render=False)
-	error0_p2p = error_cal_fcn(desired_kinematics_p2p[:,0], real_attempt_kinematics_p2p[:,0])
-	error1_p2p = error_cal_fcn(desired_kinematics_p2p[:,3], real_attempt_kinematics_p2p[:,3])
-	errors_p2p = np.concatenate([[error0_p2p], [error1_p2p]],axis=0)
-	return errors_p2p		
+	attempt_kinematics = positions_to_kinematics_fcn(q0_p2p, q1_p2p, timestep = 0.01)
+	#kinematics_activations_show_fcn(vs_time=False, kinematics=attempt_kinematics)
+	est_attempt_activations = estimate_activations_fcn(model=model, desired_kinematics=attempt_kinematics)
+	if (number_of_refinements == 0) and (Mj_render==True):
+		Mj_render_last_run = True
+	[real_attempt_kinematics, real_attempt_activations, chassis_pos] = run_activations_fcn(MuJoCo_model_name=MuJoCo_model_name, est_activations=est_attempt_activations, Mj_render=Mj_render_last_run)
+	error0 = np.array([error_cal_fcn(attempt_kinematics[:,0], real_attempt_kinematics[:,0])])
+	error1 = np.array([error_cal_fcn(attempt_kinematics[:,3], real_attempt_kinematics[:,3])])
+	average_error = (error0+error1)/2
+	for ii in range(number_of_refinements):
+		if (ii+1 == number_of_refinements) and (Mj_render==True):
+			Mj_render_last_run = True
+		print("Refinement_no", ii+1)
+		[cum_kinematics, cum_activations] = concatinate_data_fcn(cum_kinematics, cum_activations, real_attempt_kinematics, real_attempt_activations)
+		model = inverse_mapping_fcn(kinematics=cum_kinematics, activations=cum_activations, log_address=log_address+"refinement_{}".format(ii+1), prior_model=model)
+		est_attempt_activations = estimate_activations_fcn(model=model, desired_kinematics=attempt_kinematics)
+		[real_attempt_kinematics, real_attempt_activations, chassis_pos] = run_activations_fcn(MuJoCo_model_name=MuJoCo_model_name, est_activations=est_attempt_activations, Mj_render=Mj_render_last_run)
+		error0 = np.append(error0, error_cal_fcn(attempt_kinematics[:,0], real_attempt_kinematics[:,0]))
+		error1 = np.append(error1, error_cal_fcn(attempt_kinematics[:,3], real_attempt_kinematics[:,3]))
+		average_error = np.append(average_error, (error0[-1]+error1[-1])/2)
+	if error_plots_show:
+		# plotting error plots
+		plt.figure()
+		plt.subplot(3, 1, 1)
+		plt.plot(range(error0.shape[0]), error0, marker='o',)
+		plt.ylabel("q0 error (rads)")
+		plt.subplot(3, 1, 2)
+		plt.plot(range(error1.shape[0]), error1, marker='o',)
+		plt.ylabel("q1 error (rads)")
+		plt.subplot(3, 1, 3)
+		plt.plot(range(average_error.shape[0]), average_error, marker='o',)
+		plt.ylabel("average error (rads)")
+		plt.xlabel("Refinement #")
+		# plotting desired vs real joint positions after refinements
+		plt.figure()
+		plt.subplot(2, 1, 1)
+		plt.plot(range(attempt_kinematics.shape[0]), real_attempt_kinematics[:,0], range(attempt_kinematics.shape[0]), attempt_kinematics[:,0])
+		plt.ylabel("q0 desired vs. simulated")
+		plt.subplot(2, 1, 2)
+		plt.plot(range(attempt_kinematics.shape[0]), real_attempt_kinematics[:,3], range(attempt_kinematics.shape[0]), attempt_kinematics[:,3])
+		plt.ylabel("q1  desired vs. simulated")
+		plt.xlabel("Sample #")
+		plt.show()
+	errors=np.concatenate([[error0], [error1]],axis=0)
+	return model, errors, cum_kinematics, cum_activations	
 ################################################
 ################################################
 #Higher level control functions
@@ -304,6 +345,13 @@ def systemID_input_gen_fcn(signal_duration_in_seconds, pass_chance, max_in, min_
 			gen_input[ii] = gen_input[ii-1]
 	return gen_input
 
+def copy_model_fcn(original_model):
+	config=original_model.get_config()
+	new_model=tf.keras.Sequential.from_config(config)
+	new_model.set_weights(original_model.get_weights())
+	new_model.compile(optimizer=tf.train.AdamOptimizer(0.01),loss='mse',metrics=['mse'])  # mean squared error
+	return new_model
+
 def inverse_mapping_fcn(kinematics, activations, log_address=None, early_stopping=False, **kwargs):
 	"""
 	this function used the babbling data to create an inverse mapping using a
@@ -317,13 +365,16 @@ def inverse_mapping_fcn(kinematics, activations, log_address=None, early_stoppin
 	tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 	
 	if ("prior_model" in kwargs):
-		model=kwargs["prior_model"]
+		model = kwargs["prior_model"]
+		history = \
 		model.fit(
 		x_train,
 		y_train,
 		epochs=5,
 		validation_data=(x_valid, y_valid),
 		callbacks=[tensorboard_callback])
+		with open(logdir+'/trainHistoryDict.pickle', 'wb') as file_pi:
+			pickle.dump(history.history, file_pi)
 	else:
 		model = tf.keras.Sequential()
 		# Adds a densely-connected layer with 15 units to the model:
@@ -334,12 +385,15 @@ def inverse_mapping_fcn(kinematics, activations, log_address=None, early_stoppin
 	              loss='mse',       # mean squared error
 	              metrics=['mse'])  # mean squared error
 		#training the model
+		history = \
 		model.fit(
 		x_train,
 		y_train,
 		epochs=20,
 		validation_data=(x_valid, y_valid),
 		callbacks=[tensorboard_callback])
+		with open(logdir+'/trainHistoryDict.pickle', 'wb') as file_pi:
+			pickle.dump(history.history, file_pi)
 		#tf.keras.utils.plot_model(model, to_file='model.png')
 	
 	# running the model
