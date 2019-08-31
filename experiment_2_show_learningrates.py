@@ -61,28 +61,33 @@ for mod_iter in range(6):
 	#axes[np.divmod(mod_iter,3)[0]][np.divmod(mod_iter,3)[1]].plot(mean_curve_all[mod_iter,:])
 	if show_p2p:
 		if mod_iter < 3:
-			axes[0][0].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=average_curve_mean_all[mod_iter,:], yerr=average_curve_std_all[mod_iter,:])
-			axes[0][1].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q0_curve_mean_all[mod_iter,:], yerr=q0_curve_std_all[mod_iter,:])
-			axes[0][2].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:])
+			axes[0][0].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=average_curve_mean_all[mod_iter,:], yerr=average_curve_std_all[mod_iter,:], capsize=2)
+			axes[0][1].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q0_curve_mean_all[mod_iter,:], yerr=q0_curve_std_all[mod_iter,:], capsize=2)
+			axes[0][2].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:], capsize=2)
+			for ii in range(ncols):
+				plt.sca(axes[0][ii])
+				plt.xticks(range(6), ['','','','','',''])
 		else:
-			axes[1][0].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=average_curve_mean_all[mod_iter,:], yerr=average_curve_std_all[mod_iter,:])
-			axes[1][1].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q0_curve_mean_all[mod_iter,:], yerr=q0_curve_std_all[mod_iter,:])
-			axes[1][2].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:])
+			axes[1][0].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=average_curve_mean_all[mod_iter,:], yerr=average_curve_std_all[mod_iter,:], capsize=2)
+			axes[1][1].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q0_curve_mean_all[mod_iter,:], yerr=q0_curve_std_all[mod_iter,:], capsize=2)
+			axes[1][2].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:], capsize=2)
+			for ii in range(ncols):
+				plt.sca(axes[1][ii])
+				plt.xticks(range(6), ['babbling','refinement 0','refinement 1','refinement 2','refinement 3','refinement 4','refinement 5'], rotation=30)
 	else:
 		if mod_iter < 3:
-			axes[0].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=average_curve_mean_all[mod_iter,:], yerr=average_curve_std_all[mod_iter,:])
-			axes[1].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q0_curve_mean_all[mod_iter,:], yerr=q0_curve_std_all[mod_iter,:])
-			axes[2].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:])
-
+			axes[0].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=average_curve_mean_all[mod_iter,:], yerr=average_curve_std_all[mod_iter,:], capsize=2)
+			axes[1].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q0_curve_mean_all[mod_iter,:], yerr=q0_curve_std_all[mod_iter,:], capsize=2)
+			axes[2].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:], capsize=2)
+			for ii in range(ncols):
+				plt.sca(axes[ii])
+				plt.xticks(range(6), ['babbling','refinement 0','refinement 1','refinement 2','refinement 3','refinement 4','refinement 5'], rotation=30)
 for subplot_iter in range(nrows*ncols):
 	if show_p2p:
 		axes[np.divmod(subplot_iter,3)[0]][np.divmod(subplot_iter,3)[1]].set_ylim(y_lim)
-		axes[np.divmod(subplot_iter,3)[0]][np.divmod(subplot_iter,3)[1]].legend(['a','b','c'])
+		axes[np.divmod(subplot_iter,3)[0]][np.divmod(subplot_iter,3)[1]].legend(['A_A','A_B','B_B'])
 	else:
 		axes[subplot_iter].set_ylim(y_lim)
+		axes[subplot_iter].legend(['A_A','A_B','B_B'])
 plt.show()
-#import pdb; pdb.set_trace()
-#axes[0].
-
-
 #import pdb; pdb.set_trace()
