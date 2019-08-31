@@ -11,7 +11,7 @@ from warnings import simplefilter
 
 simplefilter(action='ignore', category=FutureWarning)
 
-experiment_ID = "experiment_2_tmp"
+experiment_ID = "experiment_2"
 errors_all_cyc_A_A = np.load("./results/{}/errors_all_cyc_A_A.npy".format(experiment_ID))
 errors_all_cyc_A_B = np.load("./results/{}/errors_all_cyc_A_B.npy".format(experiment_ID))
 errors_all_cyc_B_B = np.load("./results/{}/errors_all_cyc_B_B.npy".format(experiment_ID))
