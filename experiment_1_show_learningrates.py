@@ -16,7 +16,7 @@ babbling_times = [3]#np.arange(1,1+5)
 epoch_numbers = 20
 histories = np.empty([mc_run_number, len(babbling_times), stiffness_versions]).tolist()
 learning_errors = np.zeros([mc_run_number, len(babbling_times), stiffness_versions, epoch_numbers])
-fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(5, 5))
+fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(6, 4.5))
 for stiffness_ver in range(stiffness_versions):
 	MuJoCo_model_name="nmi_leg_w_chassis_air_v{}.xml".format(stiffness_ver)
 	for babbling_time_cntr in range(len(babbling_times)):
@@ -30,8 +30,12 @@ learning_errors_per_stiffness = np.zeros([stiffness_versions, epoch_numbers])
 for stiffness_ver in range(stiffness_versions):
 	learning_errors_per_stiffness[stiffness_ver,:] = learning_errors[:, :, stiffness_ver, :].mean(0).squeeze()
 	axes.plot(np.arange(1,epoch_numbers+1), learning_errors_per_stiffness[stiffness_ver,:])
-axes.legend(['0', '500', '1K', '2K', '4K', '7K', '10K', '15K', '20K'])
+axes.legend(['S: 0', 'S: 500', 'S: 1K', 'S: 2K', 'S: 4K', 'S: 7K', 'S: 10K', 'S: 15K', 'S: 20K'])
 #(50, 1, 9, 20) 
+axes.set_xlabel("epoch #")
+axes.set_ylabel("epoch MSE")
+axes.set_title("learning curves for different stiffness values (S)")
+fig.savefig('./results/{}/learningcurves.png'.format(experiment_ID))
 plt.show()
 
 

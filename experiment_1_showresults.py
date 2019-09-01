@@ -33,6 +33,7 @@ p0_0 = axes[0].boxplot(
 	positions=positions_cyclical,
 	notch=True,
 	patch_artist=True)
+
 p0_1 = axes[1].boxplot(
 	errors_all[0,:,:,:].reshape(1,-1,1,N).squeeze(),
 	positions=positions_cyclical,
@@ -60,27 +61,29 @@ p1_0 = axes[0].boxplot(
 	positions=positions_p2p,
 	notch=True,
 	patch_artist=True)
-axes[0].set_title(r'$(q_0+q_1)/2$',fontsize=12)
+axes[0].set_title(r'average across both joints',fontsize=12)
 axes[0].set_ylim(y_lim_p0)
 axes[0].set_xlabel('stiffness')
 axes[0].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
 axes[0].set_ylabel('RMSE')
+
 p1_1 = axes[1].boxplot(
 	errors_all[0,:,:,:].reshape(1,-1,1,N).squeeze(),
 	positions=positions_p2p,
 	notch=True,
 	patch_artist=True)
-axes[1].set_title('$q_0$', fontsize=12)
+axes[1].set_title('proximal joint ($q_0$)', fontsize=12)
 axes[1].set_ylim(y_lim)
 axes[1].set_yticklabels([])
 axes[1].set_xlabel('stiffness')
 axes[1].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
+
 p1_2 = axes[2].boxplot(
 	errors_all[1,:,:,:].reshape(1,-1,1,N).squeeze(),
 	positions=positions_p2p,
 	notch=True,
 	patch_artist=True)
-axes[2].set_title('$q_1$', fontsize=12)
+axes[2].set_title('distal joint ($q_1$)', fontsize=12)
 axes[2].set_ylim(y_lim)
 axes[2].set_yticklabels([])
 axes[2].set_xlabel('stiffness')
@@ -90,10 +93,14 @@ axes[2].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
 for bplot in (p1_0, p1_1, p1_2):
     for patch in bplot['boxes']:
         patch.set_facecolor('lightskyblue')
+
+axes[2].legend([p0_2["boxes"][0], p1_2["boxes"][0]], ['cyclical','point-to-point'], loc='upper right', bbox_to_anchor=(1.6, 1.02))
+fig.subplots_adjust(left=.05, right=.85)
+fig.savefig('./results/{}/error_vs_stiffness.png'.format(experiment_ID))
 # p-value
 [f_ow, p_val] = stats.f_oneway(errors_all.mean(0)[:,0,0],errors_all.mean(0)[:,0,3])
 print("p-value: ", p_val)
 ##
 plt.show()
-
+#import pdb; pdb.set_trace()
 

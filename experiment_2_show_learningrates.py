@@ -1,4 +1,3 @@
-
 # next is to add accel and see the difference
 # add stiffness too
 import numpy as np
@@ -42,11 +41,9 @@ errors_all_cyc_B_B,
 errors_all_p2p_A_A,
 errors_all_p2p_A_B,
 errors_all_p2p_B_B])
-print('hi')
 for mod_iter in range(number_of_mods):
 	[average_curve_mean_all[mod_iter,:], q0_curve_mean_all[mod_iter,:], q1_curve_mean_all[mod_iter,:], average_curve_std_all[mod_iter,:], q0_curve_std_all[mod_iter,:], q1_curve_std_all[mod_iter,:]] = \
 	exp2_learning_curves_cal_fcn(errors_all=errors_all[mod_iter,:])
-print('bye')
 ## plots
 show_p2p = False
 y_lim=[0, .85]
@@ -56,7 +53,8 @@ if show_p2p:
 else:
 	nrows = 1
 ncols = 3
-fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(12, 5))
+fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(9, 3))
+title_texts = ['average across both joints', 'proximal joint ($q_0$)', 'distal joint ($q_1$)']
 for mod_iter in range(6):
 	#axes[np.divmod(mod_iter,3)[0]][np.divmod(mod_iter,3)[1]].plot(mean_curve_all[mod_iter,:])
 	if show_p2p:
@@ -66,14 +64,14 @@ for mod_iter in range(6):
 			axes[0][2].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:], capsize=2)
 			for ii in range(ncols):
 				plt.sca(axes[0][ii])
-				plt.xticks(range(6), ['','','','','',''])
+				plt.xticks(range(6), [])
 		else:
 			axes[1][0].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=average_curve_mean_all[mod_iter,:], yerr=average_curve_std_all[mod_iter,:], capsize=2)
 			axes[1][1].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q0_curve_mean_all[mod_iter,:], yerr=q0_curve_std_all[mod_iter,:], capsize=2)
 			axes[1][2].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:], capsize=2)
 			for ii in range(ncols):
 				plt.sca(axes[1][ii])
-				plt.xticks(range(6), ['babbling','refinement 0','refinement 1','refinement 2','refinement 3','refinement 4','refinement 5'], rotation=30)
+				plt.xticks(range(6), ['babbling', 'refinement #1','refinement #2','refinement #3','refinement #4','refinement #5'], rotation=30, ha='right')
 	else:
 		if mod_iter < 3:
 			axes[0].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=average_curve_mean_all[mod_iter,:], yerr=average_curve_std_all[mod_iter,:], capsize=2)
@@ -81,13 +79,21 @@ for mod_iter in range(6):
 			axes[2].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:], capsize=2)
 			for ii in range(ncols):
 				plt.sca(axes[ii])
-				plt.xticks(range(6), ['babbling','refinement 0','refinement 1','refinement 2','refinement 3','refinement 4','refinement 5'], rotation=30)
+				plt.xticks(range(6), ['babbling', 'refinement #1','refinement #2','refinement #3','refinement #4','refinement #5'], rotation=30, ha='right',fontsize=8)	
+				plt.title(title_texts[ii], fontsize=10)
+				if ii==0:
+					plt.ylabel("RMSE", fontsize=8)
+				else:
+					plt.yticks([])
+
 for subplot_iter in range(nrows*ncols):
 	if show_p2p:
 		axes[np.divmod(subplot_iter,3)[0]][np.divmod(subplot_iter,3)[1]].set_ylim(y_lim)
-		axes[np.divmod(subplot_iter,3)[0]][np.divmod(subplot_iter,3)[1]].legend(['A_A','A_B','B_B'])
+		axes[np.divmod(subplot_iter,3)[0]][np.divmod(subplot_iter,3)[1]].legend(['A_A','A_B','B_B'], fontsize=6)
 	else:
 		axes[subplot_iter].set_ylim(y_lim)
-		axes[subplot_iter].legend(['A_A','A_B','B_B'])
+		axes[subplot_iter].legend(['A_A','A_B','B_B'], fontsize=6)
+fig.subplots_adjust(top=.9, bottom=.2, left=.06, right=.95)
+fig.savefig('./results/{}/learningcurves.png'.format(experiment_ID))
 plt.show()
 #import pdb; pdb.set_trace()
