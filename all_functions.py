@@ -13,17 +13,23 @@ from copy import deepcopy
 from mujoco_py.generated import const
 ################################################
 #Functions for main tests
-def learn_to_move_fcn(MuJoCo_model_name, model, cum_kinematics, cum_activations, reward_thresh=6, refinement = False, Mj_render = False):
+def learn_to_move_2_fcn(MuJoCo_model_name, model, cum_kinematics, cum_activations, reward_thresh=6, refinement = False, Mj_render = False):
 	
+	exploration_limit = 100
+	exploitation_limit = 15
 	prev_reward = np.array([0])
-	best_reward_so_far = prev_reward
+	best_reward_so_far = np.array([0])
 	best_model= model
 	all_rewards = []
+	exploration_run_no = 0
 	exploitation_run_no = 0
 	new_features = gen_features_fcn(prev_reward=prev_reward, reward_thresh=reward_thresh, best_reward_so_far=best_reward_so_far, feat_vec_length=10)
 	best_features_so_far = new_features
-	while exploitation_run_no<=15:
-		if best_reward_so_far>reward_thresh:
+	exploration_limit_reached = False
+	while exploitation_run_no<=exploitation_limit and not exploration_limit_reached:
+		if best_reward_so_far<reward_thresh:
+			exploration_run_no+=1
+		else:
 			exploitation_run_no+=1
 		new_features = gen_features_fcn(reward_thresh=reward_thresh, best_reward_so_far=best_reward_so_far, best_features_so_far=best_features_so_far)# .9*np.ones([9,])#
 		[prev_reward, attempt_kinematics, est_attempt_activations, real_attempt_kinematics, real_attempt_activations] = \
@@ -38,18 +44,20 @@ def learn_to_move_fcn(MuJoCo_model_name, model, cum_kinematics, cum_activations,
 		if prev_reward>best_reward_so_far:
 			best_reward_so_far = prev_reward
 			best_features_so_far = new_features
-			best_model = tf.keras.models.clone_model(model)
+			best_model = copy_model_fcn(model)
 		if refinement:
 			model = inverse_mapping_fcn(cum_kinematics, cum_activations, prior_model=model)
 		print("best reward so far: ", best_reward_so_far)
-	input("Learning to walk completed, Press any key to proceed")
+		if exploration_run_no == exploration_limit and best_reward_so_far < reward_thresh:
+			exploration_limit_reached = True
+	#input("Learning to walk completed, Press any key to proceed")
 	[prev_reward_best, attempt_kinematics_best, est_attempt_activations_best, real_attempt_kinematics_best, real_attempt_activations_best]= \
-	feat_to_run_attempt_fcn(MuJoCo_model_name=MuJoCo_model_name, features=best_features_so_far, model=best_model, feat_show=True, Mj_render=Mj_render)
-	kinematics_activations_show_fcn(vs_time=True, kinematics=real_attempt_kinematics)
+	feat_to_run_attempt_fcn(MuJoCo_model_name=MuJoCo_model_name, features=best_features_so_far, model=best_model, feat_show=False, Mj_render=Mj_render)
+	#kinematics_activations_show_fcn(vs_time=True, kinematics=real_attempt_kinematics)
 	print("all_reward: ", all_rewards)
 	print("prev_reward_best: ", prev_reward_best)
 	#import pdb; pdb.set_trace()
-	return best_reward_so_far, all_rewards, best_features_so_far, real_attempt_activations
+	return best_reward_so_far, all_rewards, best_features_so_far, real_attempt_activations, exploration_run_no
 
 def feat_to_run_attempt_fcn(MuJoCo_model_name, features, model,feat_show=False,Mj_render=False):
 	[q0_filtered, q1_filtered] = feat_to_positions_fcn(features, show=feat_show)
