@@ -11,7 +11,7 @@ simplefilter(action='ignore', category=FutureWarning)
 
 experiment_ID="experiment_1B"
 
-fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(12, 5))
+fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(9, 3))
 N = 9
 stiffness_values = ["0", "500", "1K", "2K", "4K", "7K", "10K", "15", "20"]
 x = np.arange(N)    # the x locations for the groups
@@ -61,7 +61,7 @@ p1_0 = axes[0].boxplot(
 	positions=positions_p2p,
 	notch=True,
 	patch_artist=True)
-axes[0].set_title(r'average across both joints',fontsize=12)
+axes[0].set_title(r'average across both joints',fontsize=10)
 axes[0].set_ylim(y_lim_p0)
 axes[0].set_xlabel('stiffness')
 axes[0].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
@@ -72,7 +72,7 @@ p1_1 = axes[1].boxplot(
 	positions=positions_p2p,
 	notch=True,
 	patch_artist=True)
-axes[1].set_title('proximal joint ($q_0$)', fontsize=12)
+axes[1].set_title('proximal joint ($q_0$)', fontsize=10)
 axes[1].set_ylim(y_lim)
 axes[1].set_yticklabels([])
 axes[1].set_xlabel('stiffness')
@@ -83,7 +83,7 @@ p1_2 = axes[2].boxplot(
 	positions=positions_p2p,
 	notch=True,
 	patch_artist=True)
-axes[2].set_title('distal joint ($q_1$)', fontsize=12)
+axes[2].set_title('distal joint ($q_1$)', fontsize=10)
 axes[2].set_ylim(y_lim)
 axes[2].set_yticklabels([])
 axes[2].set_xlabel('stiffness')
@@ -94,8 +94,8 @@ for bplot in (p1_0, p1_1, p1_2):
     for patch in bplot['boxes']:
         patch.set_facecolor('lightskyblue')
 
-axes[2].legend([p0_2["boxes"][0], p1_2["boxes"][0]], ['cyclical','point-to-point'], loc='upper right', bbox_to_anchor=(1.6, 1.02))
-fig.subplots_adjust(left=.05, right=.85)
+axes[2].legend([p0_2["boxes"][0], p1_2["boxes"][0]], ['cyclical','point-to-point'], loc='upper right')#bbox_to_anchor=(1.6, 1.02)
+fig.subplots_adjust(left=.06, right=.95, bottom=.17)
 fig.savefig('./results/{}/error_vs_stiffness.png'.format(experiment_ID))
 # p-value
 [f_ow, p_val] = stats.f_oneway(errors_all.mean(0)[:,0,0],errors_all.mean(0)[:,0,3])

@@ -4,12 +4,14 @@
 import numpy as np
 from scipy import signal, stats
 from matplotlib import pyplot as plt
+import colorsys
 from all_functions import *
 import pickle
 from warnings import simplefilter
 simplefilter(action='ignore', category=FutureWarning)
 
 experiment_ID="experiment_1B"
+
 stiffness_versions = 9#[0, 500, 1000, 2000, 4000, 7000, 10000. 15000, 20000]
 mc_run_number = 50
 babbling_times = [3]#np.arange(1,1+5)
@@ -29,9 +31,10 @@ for stiffness_ver in range(stiffness_versions):
 learning_errors_per_stiffness = np.zeros([stiffness_versions, epoch_numbers])
 for stiffness_ver in range(stiffness_versions):
 	learning_errors_per_stiffness[stiffness_ver,:] = learning_errors[:, :, stiffness_ver, :].mean(0).squeeze()
-	axes.plot(np.arange(1,epoch_numbers+1), learning_errors_per_stiffness[stiffness_ver,:])
+	axes.plot(np.arange(1,epoch_numbers+1), learning_errors_per_stiffness[stiffness_ver,:],color=colorsys.hsv_to_rgb(stiffness_ver/10,1,.75), alpha=.65)
 axes.legend(['S: 0', 'S: 500', 'S: 1K', 'S: 2K', 'S: 4K', 'S: 7K', 'S: 10K', 'S: 15K', 'S: 20K'])
 #(50, 1, 9, 20) 
+axes.set_xticks(np.arange(1,epoch_numbers+1))
 axes.set_xlabel("epoch #")
 axes.set_ylabel("epoch MSE")
 axes.set_title("learning curves for different stiffness values (S)")

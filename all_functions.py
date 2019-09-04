@@ -13,7 +13,7 @@ from copy import deepcopy
 from mujoco_py.generated import const
 ################################################
 #Functions for main tests
-def learn_to_move_2_fcn(MuJoCo_model_name, model, cum_kinematics, cum_activations, reward_thresh=6, refinement = False, Mj_render = False):
+def learn_to_move_2_fcn(MuJoCo_model_name, model, cum_kinematics, cum_activations, reward_thresh=6, energy_cost_weight=0, refinement = False, Mj_render = False):
 	
 	exploration_limit = 100
 	exploitation_limit = 15
@@ -33,7 +33,7 @@ def learn_to_move_2_fcn(MuJoCo_model_name, model, cum_kinematics, cum_activation
 			exploitation_run_no+=1
 		new_features = gen_features_fcn(reward_thresh=reward_thresh, best_reward_so_far=best_reward_so_far, best_features_so_far=best_features_so_far)# .9*np.ones([9,])#
 		[prev_reward, attempt_kinematics, est_attempt_activations, real_attempt_kinematics, real_attempt_activations] = \
-			feat_to_run_attempt_fcn(MuJoCo_model_name=MuJoCo_model_name, features=new_features, model=model,feat_show=False)
+			feat_to_run_attempt_fcn(MuJoCo_model_name=MuJoCo_model_name, features=new_features, model=model, energy_cost_weight=energy_cost_weight, feat_show=False)
 		
 		#kinematics_activations_show_fcn(vs_time=True, kinematics=attempt_kinematics,activations=est_attempt_activations)
 		#kinematics_activations_show_fcn(vs_time=True, kinematics=real_attempt_kinematics,activations=real_attempt_activations)
@@ -52,20 +52,21 @@ def learn_to_move_2_fcn(MuJoCo_model_name, model, cum_kinematics, cum_activation
 			exploration_limit_reached = True
 	#input("Learning to walk completed, Press any key to proceed")
 	[prev_reward_best, attempt_kinematics_best, est_attempt_activations_best, real_attempt_kinematics_best, real_attempt_activations_best]= \
-	feat_to_run_attempt_fcn(MuJoCo_model_name=MuJoCo_model_name, features=best_features_so_far, model=best_model, feat_show=False, Mj_render=Mj_render)
+	feat_to_run_attempt_fcn(MuJoCo_model_name=MuJoCo_model_name, features=best_features_so_far, model=best_model, energy_cost_weight=energy_cost_weight, feat_show=False, Mj_render=Mj_render)
 	#kinematics_activations_show_fcn(vs_time=True, kinematics=real_attempt_kinematics)
 	print("all_reward: ", all_rewards)
 	print("prev_reward_best: ", prev_reward_best)
 	#import pdb; pdb.set_trace()
 	return best_reward_so_far, all_rewards, best_features_so_far, real_attempt_activations, exploration_run_no
 
-def feat_to_run_attempt_fcn(MuJoCo_model_name, features, model,feat_show=False,Mj_render=False):
+def feat_to_run_attempt_fcn(MuJoCo_model_name, features, model,energy_cost_weight=0, feat_show=False,Mj_render=False):
 	[q0_filtered, q1_filtered] = feat_to_positions_fcn(features, show=feat_show)
 	step_kinematics = positions_to_kinematics_fcn(q0_filtered, q1_filtered, timestep = 0.01)
 	attempt_kinematics = step_to_attempt_kinematics_fcn(step_kinematics=step_kinematics)
 	est_attempt_activations = estimate_activations_fcn(model=model, desired_kinematics=attempt_kinematics)
 	[real_attempt_kinematics, real_attempt_activations, chassis_pos]=run_activations_fcn(MuJoCo_model_name=MuJoCo_model_name, est_activations=est_attempt_activations, Mj_render=Mj_render)
-	prev_reward = chassis_pos[-1]
+	real_attempt_energy = np.square(real_attempt_activations).sum(0).sum(0)
+	prev_reward = chassis_pos[-1] - energy_cost_weight*real_attempt_energy
 	return prev_reward, attempt_kinematics, est_attempt_activations, real_attempt_kinematics, real_attempt_activations
 
 def in_air_adaptation_fcn(MuJoCo_model_name, model, babbling_kinematics, babbling_activations, number_of_refinements=10, log_address=None, error_plots_show=False, Mj_render=False):
@@ -587,8 +588,9 @@ def run_activations_fcn(MuJoCo_model_name, est_activations, timestep=0.01, Mj_re
 	sim = MjSim(MuJoCo_model)
 	if Mj_render:
 		viewer = MjViewer(sim)
-		# viewer.cam.fixedcamid += 1
-		# viewer.cam.type = const.CAMERA_FIXED
+		## to move it to the mounted camera
+		viewer.cam.fixedcamid += 1
+		viewer.cam.type = const.CAMERA_FIXED
 	sim_state = sim.get_state()
 	control_vector_length=sim.data.ctrl.__len__()
 	#print("control_vector_length: "+str(control_vector_length))

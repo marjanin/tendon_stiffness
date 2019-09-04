@@ -10,7 +10,7 @@ from warnings import simplefilter
 
 simplefilter(action='ignore', category=FutureWarning)
 
-experiment_ID = "experiment_3"
+experiment_ID = "experiment_3_tmp"
 
 mc_run_number = 50
 babbling_time = 3
@@ -46,7 +46,7 @@ for stiffness_version_A in range(stiffness_versions):
 		model_A_babble = inverse_mapping_fcn(
 			kinematics=babbling_kinematics,
 			activations=babbling_activations,
-			log_address="./logs/{}/scalars/babble_A_mc_run{}/".format(experiment_ID, mc_counter),
+			log_address="./logs/{}/scalars/stiffness_version{}/babble_A_mc_run{}/".format(experiment_ID, stiffness_version_A, mc_counter),
 			early_stopping=False)
 		cum_kinematics_A_babble = babbling_kinematics
 		cum_activations_A_babble = babbling_activations

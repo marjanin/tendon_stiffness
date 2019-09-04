@@ -19,4 +19,21 @@ babbling_time = 2
 errors_all_A_A = np.zeros([2, mc_run_number])
 errors_all_A_B = np.zeros([2, mc_run_number])
 
-
+experiment_3_pool:
+"experiment_3_pool"
+	energy_cost_weight = 0
+	reward_thresh = 7
+"experiment_3_pool_B"
+	energy_cost_weight = 0
+	reward_thresh = 5
+"experiment_3_pool_C"
+	energy_cost_weight = 0
+	reward_thresh = 6
+"experiment_3_pool_C"
+	energy_cost_weight = 0
+	reward_thresh = 5
+	mc_run_number = 100
+"experiment_3_pool_E"
+	energy_cost_weight = 0.001
+	reward_thresh = 5
+	mc_run_number = 50
