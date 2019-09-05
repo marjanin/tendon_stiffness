@@ -82,7 +82,7 @@ p1 = axes[1].bar(range(stiffness_versions),successful_rewards_means,yerr=success
 p2 = axes[2].bar(range(stiffness_versions),successful_energies_means,yerr=successful_energies_stds, alpha=.9)
 #axes[1].set_xlabel('stiffness')
 #axes[1].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
-stiffness_values = ["0", "500", "1K", "2K", "4K", "7K", "10K", "15", "20"]
+stiffness_values = ["0", "500", "1K", "2K", "4K", "7K", "10K", "15K", "20K"]
 #titles = []
 xlabels = ['stiffness']*3
 ylabels = ['success rate (%)', 'reward', 'energy']

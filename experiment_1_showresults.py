@@ -13,7 +13,7 @@ experiment_ID="experiment_1B"
 
 fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(9, 3))
 N = 9
-stiffness_values = ["0", "500", "1K", "2K", "4K", "7K", "10K", "15", "20"]
+stiffness_values = ["0", "500", "1K", "2K", "4K", "7K", "10K", "15K", "20K"]
 x = np.arange(N)    # the x locations for the groups
 
 positions_cyclical = 2*np.arange(N)-0.25
