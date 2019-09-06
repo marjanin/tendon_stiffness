@@ -21,9 +21,7 @@ def calculate_mean_std(data, method='mean'):
 			raise NameError('invalid method: please use mean or std')
 	return output
 
-
-
-experiment_ID = "experiment_3_pool_D"
+experiment_ID = "experiment_3_pool_G"
 
 if experiment_ID == "experiment_3_pool_B":
 	reward_thresh = 5 #3:7 3B:5
@@ -34,6 +32,15 @@ elif experiment_ID == "experiment_3_pool_D":
 elif experiment_ID == "experiment_3_pool_C":
 	reward_thresh = 6 #3:7 3B:5
 	mc_run_number = 50
+elif experiment_ID == "experiment_3_pool_E":
+	reward_thresh = 4 #3:7 3B:5
+	mc_run_number = 20
+elif experiment_ID == "experiment_3_pool_F":
+	reward_thresh = 3 #3:7 3B:5
+	mc_run_number = 20
+elif experiment_ID == "experiment_3_pool_G":
+	reward_thresh = 3 #3:7 3B:5
+	mc_run_number = 100
 else:
 	reward_thresh = 7 #3:7 3B:5
 	mc_run_number = 50

@@ -188,7 +188,7 @@ def gen_features_fcn(reward_thresh, best_reward_so_far, **kwargs):
 	if best_reward_so_far<reward_thresh:
 		new_features = np.random.uniform(feat_min, feat_max, best_features_so_far.shape[0])	
 	else:
-		sigma= np.max([(12-best_reward_so_far)/100, 0.01])# should be inversly proportional to reward
+		sigma= np.max([(2*reward_thresh-best_reward_so_far)/100, 0.01])# should be inversly proportional to reward
 		new_features = np.zeros(best_features_so_far.shape[0],)
 		for ii in range(best_features_so_far.shape[0]):
 			new_features[ii] = np.random.normal(best_features_so_far[ii],sigma)

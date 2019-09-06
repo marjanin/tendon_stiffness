@@ -33,7 +33,28 @@ experiment_3_pool:
 	energy_cost_weight = 0
 	reward_thresh = 5
 	mc_run_number = 100
-"experiment_3_pool_E"
+"experiment_3_pool_?"
 	energy_cost_weight = 0.001
 	reward_thresh = 5
 	mc_run_number = 50
+"experiment_3_pool_E"
+	energy_cost_weight = 0
+	xml friction and damping of the chassis changes
+	reward_thresh = 4
+	mc_run_number = 20
+	xml friction and damping of the chassis changes
+	damping 50 friction 10 (used to be 0, 30)
+"experiment_3_pool_F"
+	energy_cost_weight = 0
+	xml friction and damping of the chassis changes
+	reward_thresh = 3
+	mc_run_number = 20
+	xml friction and damping of the chassis changes
+	damping 50 friction 10 (used to be 0, 30)
+"experiment_3_pool_G"
+	energy_cost_weight = 0
+	xml friction and damping of the chassis changes
+	reward_thresh = 3
+	mc_run_number = 100
+	xml friction and damping of the chassis changes
+	damping 50 friction 10 (used to be 0, 30)

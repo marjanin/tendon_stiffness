@@ -11,8 +11,8 @@ import multiprocessing as mp
 
 def lern_to_walk_stiffness_pool(stiffness_version_A):
 
-	experiment_ID = "experiment_3_pool_D"
-	reward_thresh = 5 #3:7 3B:5
+	experiment_ID = "experiment_3_pool_G_"
+	reward_thresh = 3 #3:7 3B:5
 	mc_run_number = 100
 	babbling_time = 3
 	number_of_refinements = 0
