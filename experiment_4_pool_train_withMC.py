@@ -13,16 +13,19 @@ import random
 
 def ppo1_nmileg_pool(stiffness_value):
 	RL_method = "PPO1"
-	total_MC_runs = 50
-	experiment_ID = "experiment_4_pool_with_MC_A/"
+	#total_MC_runs = 50
+	experiment_ID = "experiment_4_pool_with_MC_C/"
 	save_name_extension = RL_method
 	total_timesteps = 500000
 	stiffness_value_str = "stiffness_{}".format(stiffness_value)
-	for mc_cntr in range(total_MC_runs):
+	current_mc_run_num = 15 # starts from 0
+	for mc_cntr in range(current_mc_run_num, current_mc_run_num+1):
 		log_dir = "./logs/{}/MC_{}/{}/{}/".format(experiment_ID, mc_cntr, RL_method, stiffness_value_str)
 		# defining the environments
 		env = gym.make('TSNMILeg{}-v1'.format(stiffness_value))
 		#env = gym.wrappers.Monitor(env, "./tmp/gym-results", video_callable=False, force=True)
+		## setting the Monitor
+		env = gym.wrappers.Monitor(env, log_dir+"Monitor/", video_callable=False, force=True, uid="Monitor_info")
 		# defining the initial model
 		if RL_method == "PPO1":
 			model = PPO1(common_MlpPolicy, env, verbose=1, tensorboard_log=log_dir)
