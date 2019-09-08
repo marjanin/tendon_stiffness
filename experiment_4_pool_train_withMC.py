@@ -14,11 +14,11 @@ import random
 def ppo1_nmileg_pool(stiffness_value):
 	RL_method = "PPO1"
 	#total_MC_runs = 50
-	experiment_ID = "experiment_4_pool_with_MC_C/"
+	experiment_ID = "experiment_4_pool_with_MC_C_/"
 	save_name_extension = RL_method
 	total_timesteps = 500000
 	stiffness_value_str = "stiffness_{}".format(stiffness_value)
-	current_mc_run_num = 15 # starts from 0
+	current_mc_run_num = 49 # starts from 0
 	for mc_cntr in range(current_mc_run_num, current_mc_run_num+1):
 		log_dir = "./logs/{}/MC_{}/{}/{}/".format(experiment_ID, mc_cntr, RL_method, stiffness_value_str)
 		# defining the environments

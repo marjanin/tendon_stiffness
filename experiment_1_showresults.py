@@ -63,7 +63,7 @@ p1_0 = axes[0].boxplot(
 	patch_artist=True)
 axes[0].set_title(r'average across both joints',fontsize=10)
 axes[0].set_ylim(y_lim_p0)
-axes[0].set_xlabel('stiffness')
+axes[0].set_xlabel('stiffness (N/m)')
 axes[0].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
 axes[0].set_ylabel('RMSE')
 
@@ -75,7 +75,7 @@ p1_1 = axes[1].boxplot(
 axes[1].set_title('proximal joint ($q_0$)', fontsize=10)
 axes[1].set_ylim(y_lim)
 axes[1].set_yticklabels([])
-axes[1].set_xlabel('stiffness')
+axes[1].set_xlabel('stiffness (N/m)')
 axes[1].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
 
 p1_2 = axes[2].boxplot(
@@ -86,7 +86,7 @@ p1_2 = axes[2].boxplot(
 axes[2].set_title('distal joint ($q_1$)', fontsize=10)
 axes[2].set_ylim(y_lim)
 axes[2].set_yticklabels([])
-axes[2].set_xlabel('stiffness')
+axes[2].set_xlabel('stiffness (N/m)')
 axes[2].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
 
 # changing the box colors
@@ -94,7 +94,7 @@ for bplot in (p1_0, p1_1, p1_2):
     for patch in bplot['boxes']:
         patch.set_facecolor('lightskyblue')
 
-axes[2].legend([p0_2["boxes"][0], p1_2["boxes"][0]], ['cyclical','point-to-point'], loc='upper right')#bbox_to_anchor=(1.6, 1.02)
+axes[2].legend([p0_2["boxes"][0], p1_2["boxes"][0]], ['cyclical','point-to-point'], loc='upper right', fontsize='small')#bbox_to_anchor=(1.6, 1.02)
 fig.subplots_adjust(left=.06, right=.95, bottom=.17)
 fig.savefig('./results/{}/error_vs_stiffness.png'.format(experiment_ID))
 # p-value
