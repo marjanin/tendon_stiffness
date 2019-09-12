@@ -8,6 +8,7 @@ from all_functions import *
 import pickle
 from warnings import simplefilter
 import matplotlib
+
 simplefilter(action='ignore', category=FutureWarning)
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42

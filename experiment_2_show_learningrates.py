@@ -17,6 +17,11 @@ def exp2_learning_curves_cal_fcn(errors_all):
 	return average_curve_mean, q0_curve_mean, q1_curve_mean, average_curve_std, q0_curve_std, q1_curve_std 
 
 simplefilter(action='ignore', category=FutureWarning)
+
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
+
 experiment_ID = "experiment_2"
 number_of_refinements = 5
 errors_all_cyc_A_A = np.load("./results/{}/errors_all_cyc_A_A.npy".format(experiment_ID))

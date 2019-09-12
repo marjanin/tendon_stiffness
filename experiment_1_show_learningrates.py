@@ -8,7 +8,12 @@ import colorsys
 from all_functions import *
 import pickle
 from warnings import simplefilter
+import matplotlib
+
 simplefilter(action='ignore', category=FutureWarning)
+
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 experiment_ID="experiment_1B"
 
@@ -33,7 +38,7 @@ for stiffness_ver in range(stiffness_versions):
 learning_errors_per_stiffness = np.zeros([stiffness_versions, epoch_numbers])
 for stiffness_ver in range(stiffness_versions):
 	learning_errors_per_stiffness[stiffness_ver,:] = learning_errors[:, :, stiffness_ver, :].mean(0).squeeze()
-	axes.plot(np.arange(1,epoch_numbers_to_show+1), learning_errors_per_stiffness[stiffness_ver,:epoch_numbers_to_show],color=colorsys.hsv_to_rgb(stiffness_ver/10,1,.75), alpha=.65)
+	axes.plot(np.arange(1,epoch_numbers_to_show+1), learning_errors_per_stiffness[stiffness_ver,:epoch_numbers_to_show],color=colorsys.hsv_to_rgb((8-stiffness_ver)/14,1,.75), alpha=.55, linewidth=2.2)
 #(50, 1, 9, 20) 
 plt.sca(axes)
 plt.legend(['S: 0', 'S: 500', 'S: 1K', 'S: 2K', 'S: 4K', 'S: 7K', 'S: 10K', 'S: 15K', 'S: 20K'])

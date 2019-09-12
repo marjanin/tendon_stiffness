@@ -2,11 +2,21 @@ import json
 import numpy as np
 from scipy import signal, stats
 from matplotlib import pyplot as plt
+import colorsys
 import pickle
 from warnings import simplefilter
 import os
 
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
+
+extended_view = False
 stiffness_versions = 9
+if extended_view:
+	select_stiffness = range(stiffness_versions)
+else:
+	select_stiffness = np.array([0, 2, 4, 6, 8])
 RL_method = "PPO1"
 total_MC_runs = 50 # starts from 1
 experiment_ID = "experiment_4_pool_with_MC_C"
@@ -33,20 +43,28 @@ final_displacement = np.zeros([total_MC_runs, stiffness_versions])
 pass_displacement_point = np.zeros([total_MC_runs ,stiffness_versions])
 displacement_point = 9
 fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(4.5, 3))
-stiffness_values = ["0", "500", "1K", "2K", "4K", "7K", "10K", "15K", "20K"]
 
+stiffness_values_full = ["0", "500", "1K", "2K", "4K", "7K", "10K", "15K", "20K"]
+if extended_view:
+	stiffness_values = stiffness_values_full
+else:
+	stiffness_values = ["0", "1K", "4K", "10K", "20K"]
 ## Figure 1
-for stiffness_value in range(stiffness_versions):
+for stiffness_value in select_stiffness:
 	x0=range(total_episodes)
 	y0=episode_displacement_average[stiffness_value,:]
 	std0 = episode_displacement_std[stiffness_value,:]
-	plt.plot(x0, y0, alpha=.85)
-	plt.fill_between(x0, y0-std0/2, y0+std0/2, alpha=0.20)
+	plt.plot(x0, y0, color=colorsys.hsv_to_rgb((8-stiffness_value)/14,1,.75), alpha=.75)
+	plt.fill_between(x0, y0-std0/2, y0+std0/2,
+		color=colorsys.hsv_to_rgb((8-stiffness_value)/14,1,.75), alpha=0.20)
+	
+
+for stiffness_value in range(stiffness_versions):	
 	final_displacement[:,stiffness_value] = episode_displacement_all[:,stiffness_value,-1]
 	for mc_cntr in range(total_MC_runs):
 		pass_displacement_point[mc_cntr, stiffness_value] = np.min(np.where(episode_displacement_all[mc_cntr, stiffness_value,:]>=displacement_point))
 
-plt.legend(stiffness_values, fontsize='x-small')
+plt.legend(stiffness_values, fontsize='x-small',loc='lower right')
 plt.xlabel('Episode #')
 plt.ylabel('Displacement (m)')
 plt.yticks(rotation=45, fontsize=8)
@@ -61,20 +79,27 @@ fig, axes = plt.subplots(nrows=1, ncols=ncols, figsize=(4.5, 3))
 x1=range(stiffness_versions)
 y1 = pass_displacement_point.mean(0)
 std1 = pass_displacement_point.std(0)
-axes[0].plot(x1, y1, 'o-')
+axes[0].plot(x1, y1, '-')
 axes[0].fill_between(x1, y1-std1/2, y1+std1/2, alpha=0.25, edgecolor='C9', facecolor='C9')
 
 x2=range(stiffness_versions)
 y2 = final_displacement.mean(0)
 std2 = final_displacement.std(0)
-axes[1].plot(x2, y2, 'o-')
+axes[1].plot(x2, y2, '-')
 axes[1].fill_between(x2, y2-std2/2, y2+std2/2, alpha=0.25, edgecolor='C9', facecolor='C9')
 xlabels = ['Stiffness (N/M)', 'Stiffness (N/M)']
 ylabels = ['Episode #', 'Displacement (m)']
+
+
+for stiffness_value in range(stiffness_versions):
+	axes[0].plot(x1[stiffness_value], y1[stiffness_value], 'o',alpha=.9, color=colorsys.hsv_to_rgb((8-stiffness_value)/14,1,.75))
+	axes[1].plot(x2[stiffness_value], y2[stiffness_value], 'o',alpha=.9, color=colorsys.hsv_to_rgb((8-stiffness_value)/14,1,.75))
+
+
 for ii in range(ncols):
 	plt.sca(axes[ii])
 	plt.xlabel(xlabels[ii], fontsize=9)
-	plt.xticks(x1, stiffness_values, rotation=45, fontsize=8)
+	plt.xticks(x1, stiffness_values_full, rotation=45, fontsize=8)
 	plt.ylabel(ylabels[ii], fontsize=9)
 	plt.yticks(rotation=45, fontsize=8)
 fig.subplots_adjust(top=.95, bottom=.17, left=.11, right=.95, wspace=.33)

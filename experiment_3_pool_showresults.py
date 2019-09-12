@@ -9,6 +9,8 @@ from all_functions import *
 import pickle
 from warnings import simplefilter
 
+import matplotlib
+
 def calculate_mean_std(data, method='mean'):
 	stiffness_versions = data.shape[0]
 	output = np.zeros(stiffness_versions)
@@ -20,6 +22,9 @@ def calculate_mean_std(data, method='mean'):
 		else:
 			raise NameError('invalid method: please use mean or std')
 	return output
+
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 experiment_ID = "experiment_3_pool_G"
 
