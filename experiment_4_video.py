@@ -11,7 +11,7 @@ from stable_baselines import PPO1, PPO2, DDPG
 RL_method = "PPO1"
 experiment_ID = "experiment_4_pool_with_MC_C/"
 mc_cntr = 1
-stiffness_value = 4
+stiffness_value = 0
 stiffness_value_str = "stiffness_{}".format(stiffness_value)
 save_name_extension = RL_method
 log_dir_read = "./logs/{}/MC_{}/{}/{}/".format(experiment_ID, mc_cntr, RL_method, stiffness_value_str)
