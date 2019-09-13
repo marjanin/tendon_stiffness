@@ -11,7 +11,7 @@ from warnings import simplefilter
 simplefilter(action='ignore', category=FutureWarning)
 
 experiment_ID = "experiment_2_2way"
-mc_run_number = 2
+mc_run_number = 50
 babbling_time = 3
 number_of_refinements = 5
 errors_all_cyc_A_A = np.zeros([2, number_of_refinements+1, mc_run_number])
@@ -173,8 +173,8 @@ for mc_counter in range(mc_run_number):
 
 	np.random.seed(random_seed) # change the seed for different initial conditions
 	tf.random.set_random_seed(random_seed)
-	model_B_refined_B_p2p = copy_model_fcn(original_model=model_B_babble)
-	[model_B_refined_B_p2p, errors, cum_kinematics_B_refined, cum_activations_B_refined] =\
+	model_B_refined_A_p2p = copy_model_fcn(original_model=model_B_babble)
+	[model_B_refined_A_p2p, errors, cum_kinematics_A_refined, cum_activations_A_refined] =\
 		p2p_run_fcn(
 			MuJoCo_model_name=MuJoCo_model_name_A,
 			model=model_B_refined_A_cyc,

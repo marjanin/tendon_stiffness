@@ -30,8 +30,8 @@ file_address = "./results/{}/errors_all_cyclical.npy".format(experiment_ID)
 errors_all = np.load(file_address)
 errors_all_mean=errors_all.mean(1)
 errors_all_std = errors_all.std(1)
-print("errors_mean: ",errors_all_mean)
-print("errors_std: ",errors_all_std)
+print("Errors_mean: ",errors_all_mean)
+print("Errors_std: ",errors_all_std)
 p0_0 = axes[0].boxplot(
 	errors_all.mean(0).reshape(1,-1,1,N).squeeze(),
 	positions=positions_cyclical,
@@ -69,9 +69,9 @@ p1_0 = axes[0].boxplot(
 	notch=True,
 	patch_artist=True,
 	showfliers=False)
-axes[0].set_title(r'average across both joints',fontsize=10)
+axes[0].set_title(r'Average across both joints',fontsize=10)
 axes[0].set_ylim(y_lim_p0)
-axes[0].set_xlabel('stiffness (N/m)')
+axes[0].set_xlabel('Stiffness (N/m)')
 axes[0].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
 axes[0].set_ylabel('RMSE')
 
@@ -81,10 +81,10 @@ p1_1 = axes[1].boxplot(
 	notch=True,
 	patch_artist=True,
 	showfliers=False)
-axes[1].set_title('proximal joint ($q_0$)', fontsize=10)
+axes[1].set_title('Proximal joint ($q_0$)', fontsize=10)
 axes[1].set_ylim(y_lim)
 axes[1].set_yticklabels([])
-axes[1].set_xlabel('stiffness (N/m)')
+axes[1].set_xlabel('Stiffness (N/m)')
 axes[1].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
 
 p1_2 = axes[2].boxplot(
@@ -93,10 +93,10 @@ p1_2 = axes[2].boxplot(
 	notch=True,
 	patch_artist=True,
 	showfliers=False)
-axes[2].set_title('distal joint ($q_1$)', fontsize=10)
+axes[2].set_title('Distal joint ($q_1$)', fontsize=10)
 axes[2].set_ylim(y_lim)
 axes[2].set_yticklabels([])
-axes[2].set_xlabel('stiffness (N/m)')
+axes[2].set_xlabel('Stiffness (N/m)')
 axes[2].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
 
 # changing the box colors

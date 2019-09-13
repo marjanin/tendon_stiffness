@@ -6,6 +6,10 @@ from matplotlib import pyplot as plt
 from all_functions import *
 import pickle
 from warnings import simplefilter
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
+matplotlib.rcParams['mathtext.fontset'] = 'cm'
 
 def exp2_learning_curves_cal_fcn(errors_all):
 	average_curve_mean = errors_all.mean(0).mean(1)
@@ -17,10 +21,6 @@ def exp2_learning_curves_cal_fcn(errors_all):
 	return average_curve_mean, q0_curve_mean, q1_curve_mean, average_curve_std, q0_curve_std, q1_curve_std 
 
 simplefilter(action='ignore', category=FutureWarning)
-
-import matplotlib
-matplotlib.rcParams['pdf.fonttype'] = 42
-matplotlib.rcParams['ps.fonttype'] = 42
 
 experiment_ID = "experiment_2"
 number_of_refinements = 5
@@ -99,6 +99,7 @@ for subplot_iter in range(nrows*ncols):
 		axes[subplot_iter].set_ylim(y_lim)
 		axes[subplot_iter].legend(['A_A','A_B','B_B'], fontsize=6)
 fig.subplots_adjust(top=.9, bottom=.2, left=.06, right=.95)
-fig.savefig('./results/{}/learningcurves.png'.format(experiment_ID))
+fig.savefig('./results/{}/exp2_learningcurves.pdf'.format(experiment_ID))
+fig.savefig('./results/figures/exp2_learningcurves.pdf'.format(experiment_ID))
 plt.show()
 #import pdb; pdb.set_trace()

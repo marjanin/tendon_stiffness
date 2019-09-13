@@ -11,6 +11,9 @@ import os
 from datetime import datetime
 from copy import deepcopy
 from mujoco_py.generated import const
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 ################################################
 #Functions for main tests
 def learn_to_move_2_fcn(MuJoCo_model_name, model, cum_kinematics, cum_activations, reward_thresh=6, energy_cost_weight=0, refinement = False, Mj_render = False):

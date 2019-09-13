@@ -10,7 +10,11 @@ import pickle
 from warnings import simplefilter
 
 import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
+matplotlib.rcParams['mathtext.fontset'] = 'cm'
 
+plt.rcParams['svg.fonttype'] = 'none'
 def calculate_mean_std(data, method='mean'):
 	stiffness_versions = data.shape[0]
 	output = np.zeros(stiffness_versions)
@@ -23,8 +27,7 @@ def calculate_mean_std(data, method='mean'):
 			raise NameError('invalid method: please use mean or std')
 	return output
 
-matplotlib.rcParams['pdf.fonttype'] = 42
-matplotlib.rcParams['ps.fonttype'] = 42
+
 
 experiment_ID = "experiment_3_pool_G"
 
@@ -96,8 +99,8 @@ p2 = axes[2].bar(range(stiffness_versions),successful_energies_means,yerr=succes
 #axes[1].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
 stiffness_values = ["0", "500", "1K", "2K", "4K", "7K", "10K", "15K", "20K"]
 #titles = []
-xlabels = ['stiffness']*3
-ylabels = ['success rate (%)', 'reward', 'energy']
+xlabels = ['Stiffness']*3
+ylabels = ['Success rate (%)', 'Reward', 'Energy']
 
 for ii in range(ncols):
 	plt.sca(axes[ii])
@@ -106,7 +109,8 @@ for ii in range(ncols):
 	plt.ylabel(ylabels[ii], fontsize=9)
 	plt.yticks(rotation=45, fontsize=8)
 fig.subplots_adjust(top=.9, bottom=.2, left=.06, right=.95, wspace=.30)
-fig.savefig('./results/{}/learn2walk_results.png'.format(experiment_ID))
+fig.savefig('./results/{}/exp3_learn2walk_results.pdf'.format(experiment_ID))
+fig.savefig('./results/figures/exp3_learn2walk_results.pdf'.format(experiment_ID))
 # p0 = axes[1].boxplot(
 # 	[errors_all_cyc_A_A.mean(0)[0], errors_all_cyc_A_B.mean(0)[0], errors_all_cyc_B_B.mean(0)[0]],
 # 	notch=True,
