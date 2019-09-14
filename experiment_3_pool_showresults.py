@@ -92,9 +92,9 @@ nrows = 1
 ncols = 3
 fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(9, 3))
 #import pdb; pdb.set_trace()
-p0 = axes[0].bar(range(stiffness_versions),number_of_successful_attempt/mc_run_number, alpha=.9)
-p1 = axes[1].bar(range(stiffness_versions),successful_rewards_means,yerr=successful_rewards_stds, alpha=.9)
-p2 = axes[2].bar(range(stiffness_versions),successful_energies_means,yerr=successful_energies_stds, alpha=.9)
+p0 = axes[0].bar(range(stiffness_versions),number_of_successful_attempt/mc_run_number, alpha=.5)
+p1 = axes[1].bar(range(stiffness_versions),successful_rewards_means,yerr=successful_rewards_stds, alpha=.5)
+p2 = axes[2].bar(range(stiffness_versions),successful_energies_means,yerr=successful_energies_stds, alpha=.5)
 #axes[1].set_xlabel('stiffness')
 #axes[1].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
 stiffness_values = ["0", "500", "1K", "2K", "4K", "7K", "10K", "15K", "20K"]

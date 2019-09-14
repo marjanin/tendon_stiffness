@@ -75,6 +75,8 @@ axes[0].set_xlabel('Stiffness (N/m)')
 axes[0].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
 axes[0].set_ylabel('RMSE')
 
+
+
 p1_1 = axes[1].boxplot(
 	errors_all[0,:,:,:].reshape(1,-1,1,N).squeeze(),
 	positions=positions_p2p,

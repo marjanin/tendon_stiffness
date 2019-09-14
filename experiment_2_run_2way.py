@@ -10,7 +10,7 @@ from warnings import simplefilter
 
 simplefilter(action='ignore', category=FutureWarning)
 
-experiment_ID = "experiment_2_2way"
+experiment_ID = "experiment_2_2way_"
 mc_run_number = 50
 babbling_time = 3
 number_of_refinements = 5
