@@ -47,30 +47,30 @@ displacement_point = 9
 #fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(4.5, 3))
 plt.figure(figsize=(9,3))
 plt.subplot(121)
-stiffness_values_full = ["0", "500", "1K", "2K", "4K", "7K", "10K", "15K", "20K"]
-stiffness_values_legend_full = ["S: 0", "S: 500", "S: 1K", "S: 2K", "S: 4K", "S: 7K", "S: 10K", "S: 15K", "S: 20K"]
+stiffness_values_full = ["0", "500", "1k", "2k", "4k", "7k", "10k", "15k", "20k"]
+stiffness_values_legend_full = ["K: 0", "K: 500", "K: 1k", "K: 2k", "K: 4k", "K: 7k", "K: 10k", "K: 15k", "K: 20k"]
 
 if extended_view:
 	stiffness_values = stiffness_values_full
 	stiffness_values_legend = stiffness_values_legend_full
 else:
-	stiffness_values = ["0", "1K", "4K", "10K", "20K"]
-	stiffness_values_legend = ["S: 0", "S: 1K", "S: 4K", "S: 10K", "S: 20K"]
+	stiffness_values = ["0", "1k", "4k", "10k", "20k"]
+	stiffness_values_legend = ["K: 0", "K: 1k", "K: 4k", "K: 10k", "K: 20k"]
 ## Figure 1
 for stiffness_value in select_stiffness:
 	x0=range(total_episodes)
 	y0=episode_displacement_average[stiffness_value,:]
 	std0 = episode_displacement_std[stiffness_value,:]
-	plt.plot(x0, y0, color=colorsys.hsv_to_rgb((8.5-stiffness_value)/14,1,.75), alpha=.75)
+	plt.plot(x0, y0, color=colorsys.hsv_to_rgb((8.75-stiffness_value)/14,1,.75), alpha=.75)
 	plt.fill_between(x0, y0-std0/2, y0+std0/2,
-		color=colorsys.hsv_to_rgb((8.5-stiffness_value)/14,1,.75), alpha=0.20)
+		color=colorsys.hsv_to_rgb((8.75-stiffness_value)/14,1,.75), alpha=0.20)
 plt.legend(stiffness_values_legend, fontsize='x-small',loc='lower right')
 plt.xlabel('Episode #', fontsize=8)
 plt.ylabel('Displacement (m)', fontsize=8)
 plt.xticks(np.arange(0,501,50),rotation=45, fontsize=8)
 plt.yticks(rotation=45, fontsize=8)
 plt.title('a) Learning curves: reward vs. episode plots', fontsize=8)
-plt.grid()
+#plt.grid()
 
 
 for stiffness_value in range(stiffness_versions):	
@@ -85,31 +85,33 @@ plt.subplot(143)
 x1=range(stiffness_versions)
 y1 = pass_displacement_point.mean(0)
 std1 = pass_displacement_point.std(0)
-plt.plot(x1, y1, '-')
-plt.fill_between(x1, y1-std1/2, y1+std1/2, alpha=0.25, edgecolor='C9', facecolor='C9')
+plt.plot(x1, y1, '--',color='black',alpha=.1)
+#plt.fill_between(x1, y1-std1/2, y1+std1/2, alpha=0.25, edgecolor='C9', facecolor='C9')
+plt.errorbar(x1, y1,yerr=std1/2,color='black',alpha=.2,animated=True)
 for stiffness_value in range(stiffness_versions):
-	plt.plot(x1[stiffness_value], y1[stiffness_value], 'o',alpha=.9, color=colorsys.hsv_to_rgb((8.5-stiffness_value)/14,1,.75))
+	plt.plot(x1[stiffness_value], y1[stiffness_value], 'o',alpha=1, color=colorsys.hsv_to_rgb((8.75-stiffness_value)/14,1,.75))
 plt.xlabel('Stiffness (N/M)', fontsize=8)
 plt.ylabel('Episode #', fontsize=8)
 plt.xticks(range(stiffness_versions), stiffness_values_full, rotation=45, fontsize=8)
 plt.yticks(rotation=45, fontsize=8)
 plt.title('b) Passing threshold episode', fontsize=8)
-plt.grid()
+#plt.grid()
 ## Figure 3
 plt.subplot(144)
 x2=range(stiffness_versions)
 y2 = final_displacement.mean(0)
 std2 = final_displacement.std(0)
-plt.plot(x2, y2, '-')
-plt.fill_between(x2, y2-std2/2, y2+std2/2, alpha=0.25, edgecolor='C9', facecolor='C9')
+plt.plot(x2, y2, '--',color='black',alpha=.1)
+#plt.fill_between(x2, y2-std2/2, y2+std2/2, alpha=0.25, edgecolor='C9', facecolor='C9')
+plt.errorbar(x2, y2,yerr=std2/2,color='black',alpha=.2,animated=True)
 for stiffness_value in range(stiffness_versions):
-	plt.plot(x2[stiffness_value], y2[stiffness_value], 'o',alpha=.9, color=colorsys.hsv_to_rgb((8.5-stiffness_value)/14,1,.75))
+	plt.plot(x2[stiffness_value], y2[stiffness_value], 'o',alpha=.9, color=colorsys.hsv_to_rgb((8.75-stiffness_value)/14,1,.75))
 plt.xlabel('Stiffness (N/M)', fontsize=8)
 plt.ylabel('Displacement (m)', fontsize=8)
 plt.xticks(range(stiffness_versions), stiffness_values_full,  rotation=45, fontsize=8)
 plt.yticks(rotation=45, fontsize=8)
 plt.title('c) Average final rewards', fontsize=8)
-plt.grid()
+#plt.grid()
 # for ii in range(ncols):
 # 	plt.sca(axes[ii])
 # 	plt.xlabel(xlabels[ii], fontsize=9)

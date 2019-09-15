@@ -17,7 +17,7 @@ experiment_ID="experiment_1B"
 
 fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(9, 3))
 N = 9
-stiffness_values = ["0", "500", "1K", "2K", "4K", "7K", "10K", "15K", "20K"]
+stiffness_values = ["0", "500", "1k", "2k", "4k", "7k", "10k", "15k", "20k"]
 x = np.arange(N)    # the x locations for the groups
 
 positions_cyclical = 2*np.arange(N)-0.25
@@ -73,7 +73,7 @@ axes[0].set_title(r'Average across both joints',fontsize=10)
 axes[0].set_ylim(y_lim_p0)
 axes[0].set_xlabel('Stiffness (N/m)')
 axes[0].set_xticklabels(stiffness_values, rotation=45, fontsize=8)
-axes[0].set_ylabel('RMSE')
+axes[0].set_ylabel('RMSE (rads)')
 
 
 

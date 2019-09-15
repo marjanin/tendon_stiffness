@@ -39,11 +39,11 @@ learning_errors_per_stiffness = np.zeros([stiffness_versions, epoch_numbers])
 for stiffness_ver in range(stiffness_versions):
 	learning_errors_per_stiffness[stiffness_ver,:] = learning_errors[:, :, stiffness_ver, :].mean(0).squeeze()
 	axes.plot(np.arange(1,epoch_numbers_to_show+1), learning_errors_per_stiffness[stiffness_ver,:epoch_numbers_to_show],
-		color=colorsys.hsv_to_rgb((8.5-stiffness_ver)/14,1,.75), alpha=.65, linewidth=3.0)
+		color=colorsys.hsv_to_rgb((8.75-stiffness_ver)/14,1,.75), alpha=.65, linewidth=3.0)
 #(50, 1, 9, 20) 
 plt.sca(axes)
 #plt.ylim([0.035,0.1])
-plt.legend(['S: 0', 'S: 500', 'S: 1K', 'S: 2K', 'S: 4K', 'S: 7K', 'S: 10K', 'S: 15K', 'S: 20K'],fontsize='small')
+plt.legend(['K: 0', 'K: 500', 'K: 1k', 'K: 2k', 'K: 4k', 'K: 7k', 'K: 10k', 'K: 15k', 'K: 20k'],fontsize='small')
 plt.xticks(np.arange(1,epoch_numbers_to_show+1,1), np.arange(1,epoch_numbers_to_show+1,1),
 	rotation=45, fontsize=8)
 
@@ -52,7 +52,7 @@ plt.xlabel("Epoch #", fontsize=9)
 plt.ylabel("Epoch MSE", fontsize=9)
 plt.yticks(np.arange(0.035,0.096,0.005),rotation=45, fontsize=8)
 plt.title("Learning curves for different stiffness values (S)", fontsize=10)
-plt.grid()
+#plt.grid()
 fig.savefig('./results/{}/exp1_learningcurves.pdf'.format(experiment_ID))
 fig.savefig('./results/figures/exp1_learningcurves.pdf'.format(experiment_ID))
 plt.show()

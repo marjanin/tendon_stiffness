@@ -57,7 +57,7 @@ for mod_iter in range(number_of_mods):
 	exp2_learning_curves_cal_fcn(errors_all=errors_all[mod_iter,:])
 ## plots
 show_p2p = False
-y_lim=[0.05, .85]
+y_lim=[0.1, .78]
 
 A_A_color = 'forestgreen'
 B_A_color = 'lightgreen'
@@ -78,37 +78,43 @@ for mod_iter in range(number_of_mods):
 	#axes[np.divmod(mod_iter,3)[0]][np.divmod(mod_iter,3)[1]].plot(mean_curve_all[mod_iter,:])
 	if show_p2p:
 		if mod_iter < number_of_mods/2:
-			axes[0][0].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=average_curve_mean_all[mod_iter,:], yerr=average_curve_std_all[mod_iter,:], capsize=2)
-			axes[0][1].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q0_curve_mean_all[mod_iter,:], yerr=q0_curve_std_all[mod_iter,:], capsize=2)
-			axes[0][2].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:], capsize=2)
+			axes[0][0].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=average_curve_mean_all[mod_iter,:], yerr=average_curve_std_all[mod_iter,:]/2, capsize=2)
+			axes[0][1].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q0_curve_mean_all[mod_iter,:], yerr=q0_curve_std_all[mod_iter,:]/2, capsize=2)
+			axes[0][2].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:]/2, capsize=2)
 			for ii in range(ncols):
 				plt.sca(axes[0][ii])
 				plt.xticks(range(number_of_refinements+1), [])
 		else:
-			axes[1][0].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=average_curve_mean_all[mod_iter,:], yerr=average_curve_std_all[mod_iter,:], capsize=2)
-			axes[1][1].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q0_curve_mean_all[mod_iter,:], yerr=q0_curve_std_all[mod_iter,:], capsize=2)
-			axes[1][2].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:], capsize=2)
+			axes[1][0].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=average_curve_mean_all[mod_iter,:], yerr=average_curve_std_all[mod_iter,:]/2, capsize=2)
+			axes[1][1].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q0_curve_mean_all[mod_iter,:], yerr=q0_curve_std_all[mod_iter,:]/2, capsize=2)
+			axes[1][2].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:]/2, capsize=2)
 			for ii in range(ncols):
 				plt.sca(axes[1][ii])
 				plt.xticks(range(number_of_refinements+1), ['babbling', 'refinement #1','refinement #2','refinement #3','refinement #4','refinement #5'], rotation=30, ha='right')
 	else:
 		if mod_iter < number_of_mods/2:
 			axes[0].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, 
-				y=average_curve_mean_all[mod_iter,:], yerr=average_curve_std_all[mod_iter,:], capsize=2,
-				color=mod_colors[mod_iter])
+				y=average_curve_mean_all[mod_iter,:], yerr=average_curve_std_all[mod_iter,:]/2, capsize=2,
+				color=mod_colors[mod_iter],animated=True)
+			axes[0].plot(np.arange(number_of_refinements+1)+mod_iter/10, 
+				average_curve_mean_all[mod_iter,:],'--',color=mod_colors[mod_iter],alpha=.7)
 			axes[1].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, 
-				y=q0_curve_mean_all[mod_iter,:], yerr=q0_curve_std_all[mod_iter,:], capsize=2,
-				color=mod_colors[mod_iter])
+				y=q0_curve_mean_all[mod_iter,:], yerr=q0_curve_std_all[mod_iter,:]/2, capsize=2,
+				color=mod_colors[mod_iter],animated=True)
+			axes[1].plot(np.arange(number_of_refinements+1)+mod_iter/10, 
+				q0_curve_mean_all[mod_iter,:],'--',color=mod_colors[mod_iter],alpha=.7)
 			axes[2].errorbar(x=np.arange(number_of_refinements+1)+mod_iter/10, 
-				y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:], capsize=2,
-				color=mod_colors[mod_iter])
+				y=q1_curve_mean_all[mod_iter,:], yerr=q1_curve_std_all[mod_iter,:]/2, capsize=2,
+				color=mod_colors[mod_iter],animated=True)
+			axes[2].plot(np.arange(number_of_refinements+1)+mod_iter/10, 
+				q1_curve_mean_all[mod_iter,:],'--',color=mod_colors[mod_iter],alpha=.7)
 			for ii in range(ncols):
 				plt.sca(axes[ii])
 				plt.xticks(range(number_of_refinements+1), ['babbling', 'refinement #1','refinement #2','refinement #3','refinement #4','refinement #5'], rotation=30, ha='right',fontsize=8)	
 				plt.title(title_texts[ii], fontsize=10)
 				plt.yticks(rotation=45, fontsize=8)
 				if ii==0:
-					plt.ylabel("RMSE", fontsize=8)
+					plt.ylabel("RMSE (rads)", fontsize=8)
 				# else:
 				# 	plt.yticks()
 
@@ -118,7 +124,7 @@ for subplot_iter in range(nrows*ncols):
 		axes[np.divmod(subplot_iter,3)[0]][np.divmod(subplot_iter,3)[1]].legend(['A_A','B_A','B_B','A_B'], fontsize=6)
 	else:
 		axes[subplot_iter].set_ylim(y_lim)
-		axes[subplot_iter].grid()
+		#axes[subplot_iter].grid()
 axes[-1].legend(['A_A','B_A','B_B','A_B'], fontsize=6)
 
 fig.subplots_adjust(top=.9, bottom=.2, left=.06, right=.95)
