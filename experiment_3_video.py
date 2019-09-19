@@ -14,7 +14,7 @@ simplefilter(action='ignore', category=FutureWarning)
 ['S0: 0', 'S1: 500', 'S2: 1K', 'S3: 2K', 'S4: 4K', 'S5: 7K', 'S6: 10K', 'S7: 15K', 'S8: 20K']
 #stiffness_version_A=5
 experiment_ID = "experiment_3_video"
-reward_thresh = 5 #3:7 3B:5
+reward_thresh = 3 #3:7 3B:5
 mc_run_number = 1
 babbling_time = 3
 number_of_refinements = 0
@@ -22,14 +22,15 @@ number_of_refinements = 0
 rewards = np.zeros([mc_run_number])
 energies = np.zeros([mc_run_number])
 exploration_run_numbers = np.zeros([mc_run_number])
-
-for stiffness_version_A in [0, 2, 4, 5, 7]:
+#[0, 2, 4, 5, 7]
+for stiffness_version_A in [0, 3, 5, 8]:
 	MuJoCo_model_name_A="nmi_leg_w_chassis_air_v{}.xml".format(stiffness_version_A)
 	MuJoCo_model_name_A_walk="nmi_leg_w_chassis_air_v{}_walk.xml".format(stiffness_version_A)
-	if stiffness_version_A==0:
-		random_seed = -1
+	if stiffness_version_A==0 or stiffness_version_A==5:
+		random_seed = 4
 	else:
 		random_seed = 0
+	random_seed=-1
 	for mc_counter in range(mc_run_number):
 		random_seed+=1
 		# train model_A

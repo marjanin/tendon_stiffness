@@ -10,13 +10,15 @@ from warnings import simplefilter
 
 simplefilter(action='ignore', category=FutureWarning)
 Mj_render=True
-experiment_ID="experiment_1B_"
-stiffness_versions = 1#[0, 500, 1000, 2000, 4000, 7000, 10000. 15000, 20000]
+experiment_ID="experiment_1B_video"
+#[0, 	  1,    	2,   	 3,    	4, 	   	5, 	    6,  	7,		 8]
+#[0, 	500,	 1000,	 2000,	 4000,	 7000, 	10000, 	15000,	 20000]
+stiffness_versions = [0, 3, 5, 8]
 mc_run_number = 1
 babbling_times = [3]#np.arange(1,1+5)
-errors_all_cyclical = np.zeros([2, mc_run_number, len(babbling_times), stiffness_versions])
-errors_all_p2p = np.zeros([2, mc_run_number, len(babbling_times), stiffness_versions])
-for stiffness_ver in [6]:
+errors_all_cyclical = np.zeros([2, mc_run_number, len(babbling_times), len(stiffness_versions)])
+errors_all_p2p = np.zeros([2, mc_run_number, len(babbling_times), len(stiffness_versions)])
+for stiffness_ver in stiffness_versions:
 	MuJoCo_model_name="nmi_leg_w_chassis_air_v{}.xml".format(stiffness_ver)
 	for babbling_time_cntr in range(len(babbling_times)):
 		np.random.seed(0) # change the seed for different initial conditions

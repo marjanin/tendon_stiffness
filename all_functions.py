@@ -1,3 +1,6 @@
+import time
+import pickle
+import os
 from mujoco_py import load_model_from_path, MjSim, MjViewer
 import numpy as np
 from numpy import matlib
@@ -6,8 +9,6 @@ import sklearn
 from sklearn.neural_network import MLPRegressor
 import tensorflow as tf
 from matplotlib import pyplot as plt
-import pickle
-import os
 from datetime import datetime
 from copy import deepcopy
 from mujoco_py.generated import const
@@ -591,9 +592,13 @@ def run_activations_fcn(MuJoCo_model_name, est_activations, timestep=0.01, Mj_re
 	sim = MjSim(MuJoCo_model)
 	if Mj_render:
 		viewer = MjViewer(sim)
-		## to move it to the mounted camera
+		# to move it to the mounted camera
 		viewer.cam.fixedcamid += 1
 		viewer.cam.type = const.CAMERA_FIXED
+		# # to record the video
+		# viewer._record_video = True
+		# # recording path
+		# viewer._video_path = "~/Documents/"+str(time.localtime()[3])+str(time.localtime()[4])+str(time.localtime()[5])
 	sim_state = sim.get_state()
 	control_vector_length=sim.data.ctrl.__len__()
 	#print("control_vector_length: "+str(control_vector_length))
