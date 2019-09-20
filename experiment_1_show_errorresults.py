@@ -110,6 +110,7 @@ axes[2].legend([p0_2["boxes"][0], p1_2["boxes"][0]], ['cyclical','point-to-point
 fig.subplots_adjust(left=.06, right=.95, bottom=.17)
 fig.savefig('./results/{}/exp1_error_vs_stiffness.pdf'.format(experiment_ID))
 fig.savefig('./results/figures/exp1_error_vs_stiffness.pdf'.format(experiment_ID))
+fig.savefig('./results/figures/exp1_error_vs_stiffness.png'.format(experiment_ID))
 # p-value
 [f_ow, p_val] = stats.f_oneway(errors_all.mean(0)[:,0,0],errors_all.mean(0)[:,0,3])
 print("p-value: ", p_val)

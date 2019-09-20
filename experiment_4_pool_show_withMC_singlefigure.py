@@ -128,6 +128,7 @@ os.makedirs("./results/{}".format(experiment_ID), exist_ok=True)
 plt.subplots_adjust(left=0.06, bottom=0.16, right=0.95, top=0.92, wspace=0.32)
 plt.savefig("./results/{}/exp4_PPO_results_combined.pdf".format(experiment_ID))
 plt.savefig("./results/figures/exp4_PPO_results_combined.pdf".format(experiment_ID))
+plt.savefig("./results/figures/exp4_PPO_results_combined.png".format(experiment_ID))
 plt.show() 
 
 

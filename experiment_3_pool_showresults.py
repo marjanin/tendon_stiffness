@@ -112,6 +112,7 @@ for ii in range(ncols):
 fig.subplots_adjust(top=.9, bottom=.2, left=.06, right=.95, wspace=.30)
 fig.savefig('./results/{}/exp3_learn2walk_results.pdf'.format(experiment_ID))
 fig.savefig('./results/figures/exp3_learn2walk_results.pdf'.format(experiment_ID))
+fig.savefig('./results/figures/exp3_learn2walk_results.png'.format(experiment_ID))
 # p0 = axes[1].boxplot(
 # 	[errors_all_cyc_A_A.mean(0)[0], errors_all_cyc_A_B.mean(0)[0], errors_all_cyc_B_B.mean(0)[0]],
 # 	notch=True,
